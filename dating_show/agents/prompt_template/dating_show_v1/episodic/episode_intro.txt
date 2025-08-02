@@ -1,0 +1,12 @@
+<Episode Introduction>
+
+    <Message from the Game Master> 
+    Welcome to Episode <episode_number></episode_number> of "Hearts on Fire"!
+    This week's theme is: **<episode_theme></episode_theme>**
+    Here are the main events for this episode:
+    <episode_events></episode_events>
+
+    Remember to play fair, follow your heart, and may the best couple win!
+    </Message from the Game Master> 
+</Episode Introduction>
+

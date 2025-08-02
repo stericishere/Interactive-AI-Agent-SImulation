@@ -1,0 +1,128 @@
+{
+  "overall_stats": {
+    "total_suites": 7,
+    "passed_suites": 2,
+    "failed_suites": 5,
+    "total_execution_time": 0.5576284169219434,
+    "coverage_improvement": 0,
+    "vulnerabilities_found": 0,
+    "performance_regressions": 0
+  },
+  "results": {
+    "Memory Systems Tests": {
+      "name": "Memory Systems Tests",
+      "file": "test_memory_systems.py",
+      "category": "functional",
+      "start_time": "2025-08-01T16:25:01.875922",
+      "success": true,
+      "execution_time": 0.04035716690123081,
+      "output": "\ud83e\uddea Enhanced PIANO Memory Architecture - Comprehensive Test Suite\n======================================================================\n\n--- CircularBuffer Functionality Tests ---\n\u2705 CircularBuffer: Memory addition\n\u2705 CircularBuffer: Recent memory retrieval\n\u2705 CircularBuffer: Importance filtering\n\u2705 CircularBuffer: Circular size constraint\n\u2705 CircularBuffer: Search functionality\n\n--- TemporalMemory Functionality Tests ---\n\u2705 TemporalMemory: Memory addition\n\u2705 TemporalMemory: Decay calculation\n\u2705 TemporalMemory: Time range retrieval\n\u2705 TemporalMemory: Pattern matching\n\n--- EpisodicMemory Functionality Tests ---\n\u2705 EpisodicMemory: Event addition\n\u2705 EpisodicMemory: Automatic episode creation\n\u2705 EpisodicMemory: Causal relationships\n\u2705 EpisodicMemory: Participant indexing\n\u2705 EpisodicMemory: Narrative generation\n\n--- SemanticMemory Functionality Tests ---\n\u2705 SemanticMemory: Concept addition\n\u2705 SemanticMemory: Relationship addition\n\u2705 SemanticMemory: Activation and retrieval\n\u2705 SemanticMemory: Associative retrieval\n\u2705 SemanticMemory: Type-based retrieval\n\n--- Performance Tests ---\n\u2705 CircularBuffer: Batch add (50 items): 0.04ms (threshold: 50.0ms)\n\u2705 CircularBuffer: Retrieval: 0.00ms (threshold: 50.0ms)\n\u2705 TemporalMemory: Batch add (100 items): 0.31ms (threshold: 100.0ms)\n\u2705 TemporalMemory: Retrieval: 0.35ms (threshold: 100.0ms)\n\u2705 SemanticMemory: Batch add (50 concepts): 0.10ms (threshold: 100.0ms)\n\u2705 SemanticMemory: Activation retrieval: 0.00ms (threshold: 100.0ms)\n\n--- Serialization Tests ---\n\u2705 CircularBuffer: Serialization\n\u2705 TemporalMemory: Serialization\n\u2705 EpisodicMemory: Serialization\n\u2705 SemanticMemory: Serialization\n\n--- Integration Tests ---\n\u2705 Memory Integration: Cross-system consistency\n\u2705 Memory Integration: Coordinated cleanup\n\n--- Performance Report ---\nPASS: CircularBuffer: Batch add (50 items)\n  Time: 0.04ms (threshold: 50.0ms)\nPASS: CircularBuffer: Retrieval\n  Time: 0.00ms (threshold: 50.0ms)\nPASS: TemporalMemory: Batch add (100 items)\n  Time: 0.31ms (threshold: 100.0ms)\nPASS: TemporalMemory: Retrieval\n  Time: 0.35ms (threshold: 100.0ms)\nPASS: SemanticMemory: Batch add (50 concepts)\n  Time: 0.10ms (threshold: 100.0ms)\nPASS: SemanticMemory: Activation retrieval\n  Time: 0.00ms (threshold: 100.0ms)\n\n============================================================\nTEST SUMMARY: 25/25 passed (100.0%)\n============================================================\n\n\ud83c\udf89 ALL TESTS PASSED! Memory architecture is production-ready.\n",
+      "error_output": "",
+      "exit_code": 0,
+      "stats": {
+        "tests_passed": 25,
+        "tests_total": 25
+      },
+      "end_time": "2025-08-01T16:25:01.916296"
+    },
+    "Integration Tests": {
+      "name": "Integration Tests",
+      "file": "test_integration.py",
+      "category": "integration",
+      "start_time": "2025-08-01T16:25:01.916453",
+      "success": false,
+      "execution_time": 0.06325266708154231,
+      "output": "\ud83d\udd17 Enhanced PIANO Memory Architecture - Integration Test Suite\n======================================================================\n\n--- Memory System Coordination Tests ---\n\u274c Memory Coordination: Multi-system consistency: WM:1 TM:1 EM:0 SM:2\n\u2705 Memory Coordination: Concept extraction\n\n--- CircularBufferReducer Integration Tests ---\n\u2705 CircularBufferReducer: Basic functionality\n\u2705 CircularBufferReducer: Size constraint\n\u2705 CircularBufferReducer: Empty update handling\n\n--- State Persistence Tests ---\n\u274c State Persistence: Tests: unhashable type: 'set'\n\n--- Concurrent Operations Tests ---\n\u274c Concurrent Operations: Tests: unhashable type: 'set'\n\n--- Memory Consolidation Workflow Tests ---\n\u274c Memory Consolidation: Workflow tests: 'EpisodicMemory' object has no attribute '_add_event_to_episode'\n\n--- Decision Latency Requirements Tests ---\n\u2705 Decision Latency: Single decision: 0.20ms (threshold: 100.0ms)\n\u274c Decision Latency: Tests: 'EpisodicMemory' object has no attribute '_add_event_to_episode'\n\n--- Integration Performance Report ---\nPASS: Decision Latency: Single decision\n  Time: 0.20ms (threshold: 100.0ms)\n\n============================================================\nINTEGRATION TEST SUMMARY: 4/9 passed (44.4%)\n============================================================\n\nFAILURES:\n  \u2022 Memory Coordination: Multi-system consistency: WM:1 TM:1 EM:0 SM:2\n  \u2022 State Persistence: Tests: unhashable type: 'set'\n  \u2022 Concurrent Operations: Tests: unhashable type: 'set'\n  \u2022 Memory Consolidation: Workflow tests: 'EpisodicMemory' object has no attribute '_add_event_to_episode'\n  \u2022 Decision Latency: Tests: 'EpisodicMemory' object has no attribute '_add_event_to_episode'\n\n\ud83d\udca5 5 integration tests failed. Review errors above.\n",
+      "error_output": "",
+      "exit_code": 1,
+      "stats": {
+        "tests_passed": 4,
+        "tests_total": 9
+      },
+      "end_time": "2025-08-01T16:25:01.979715"
+    },
+    "Simple Integration Tests": {
+      "name": "Simple Integration Tests",
+      "file": "test_integration_simple.py",
+      "category": "integration",
+      "start_time": "2025-08-01T16:25:01.979813",
+      "success": true,
+      "execution_time": 0.03931824991013855,
+      "output": "\ud83d\udd17 Enhanced PIANO Memory Architecture - Simplified Integration Tests\n===========================================================================\n\n--- Memory System Integration Tests ---\n\u2705 Memory Integration: All systems populated\n\u2705 Memory Integration: Cross-system retrieval\n\n--- CircularBufferReducer Tests ---\n\u2705 CircularBufferReducer: Sequential updates\n\u2705 CircularBufferReducer: Size limit enforcement\n\n--- Performance Under Load Tests ---\n\u2705 Performance Under Load: Batch operations (50 items): 0.22ms (threshold: 100.0ms)\n\u2705 Performance Under Load: Retrieval operations: 0.24ms (threshold: 50.0ms)\n\u2705 Performance Under Load: Memory cleanup: 0.07ms (threshold: 50.0ms)\n\n--- Concurrent Agent Simulation Tests ---\n\u2705 Concurrent Simulation: 3 agents, 10 operations each: 0.20ms (threshold: 200.0ms)\n\u2705 Concurrent Simulation: Independent agent state\n\u2705 Concurrent Simulation: Memory isolation\n\n--- Decision Latency Simulation Tests ---\n\u2705 Decision Latency: Average decision time: 0.18ms (threshold: 100.0ms)\n\u2705 Decision Latency: Maximum decision time: 0.18ms (threshold: 150.0ms)\n\u2705 Decision Latency: Decision consistency\n\n--- Performance Report ---\nPASS: Performance Under Load: Batch operations (50 items)\n  Time: 0.22ms (threshold: 100.0ms)\nPASS: Performance Under Load: Retrieval operations\n  Time: 0.24ms (threshold: 50.0ms)\nPASS: Performance Under Load: Memory cleanup\n  Time: 0.07ms (threshold: 50.0ms)\nPASS: Concurrent Simulation: 3 agents, 10 operations each\n  Time: 0.20ms (threshold: 200.0ms)\nPASS: Decision Latency: Average decision time\n  Time: 0.18ms (threshold: 100.0ms)\nPASS: Decision Latency: Maximum decision time\n  Time: 0.18ms (threshold: 150.0ms)\n\n============================================================\nINTEGRATION TEST SUMMARY: 7/7 passed (100.0%)\n============================================================\n\n\ud83c\udf89 ALL INTEGRATION TESTS PASSED! System ready for production.\n",
+      "error_output": "",
+      "exit_code": 0,
+      "stats": {
+        "tests_passed": 7,
+        "tests_total": 7
+      },
+      "end_time": "2025-08-01T16:25:02.019141"
+    },
+    "Comprehensive Coverage Tests": {
+      "name": "Comprehensive Coverage Tests",
+      "file": "test_comprehensive_coverage.py",
+      "category": "coverage",
+      "start_time": "2025-08-01T16:25:02.019225",
+      "success": false,
+      "execution_time": 0.1583382081007585,
+      "output": "\ud83e\uddea Enhanced PIANO Memory Architecture - Comprehensive Coverage Tests\n======================================================================\nTesting previously untested methods and edge cases...\n\n--- CircularBuffer Untested Methods ---\n\u2705 CircularBuffer: get_memories_by_type\n\u2705 CircularBuffer: get_memory_summary\n\u274c CircularBuffer: save_to_file and load_from_file: File persistence failed\n\n--- TemporalMemory Untested Methods ---\n\u274c TemporalMemory: get_temporal_summary: Invalid summary: {'total_memories': 3, 'time_span_hours': 24, 'hourly_distribution': {16: 1, 15: 1, 14: 1}, 'type_distribution': {'event': 2, 'thought': 1}, 'strength_distribution': {'strong': 1, 'medium': 2, 'weak': 0}, 'avg_strength': 0.5623952133129149}\n\u274c TemporalMemory: consolidate_memories: TemporalMemory.consolidate_memories() got an unexpected keyword argument 'min_strength'\n\n--- EpisodicMemory Untested Methods ---\n\u274c EpisodicMemory: get_episodes_by_type: Conversations: 0, Reflections: 0\n\n--- SemanticMemory Untested Methods ---\n\u274c SemanticMemory: get_memory_summary: Invalid summary: {'total_concepts': 3, 'total_relations': 2, 'concept_types': {'person': 1, 'activity': 1, 'trait': 1}, 'relation_types': {'related_to': 1, 'has_a': 1}, 'avg_activation': 0.7000000000000001, 'highly_activated': 1, 'network_density': 0.6666666666666666}\n\u274c SemanticMemory: get_concept_relationships: KNOWS\n\n--- Edge Cases and Error Handling ---\n\u2705 CircularBuffer: Edge case - minimal size\n\u274c TemporalMemory: Edge case - expired memories: '>=' not supported between instances of 'list' and 'int'\n\u2705 EpisodicMemory: Edge case - empty participants\n\u274c SemanticMemory: Edge case - concept limit: 'concept_1'\n\n--- Performance Regression Tests ---\n\u2705 CircularBuffer: Large batch operations: 0.40ms (threshold: 200.0ms)\n\u274c SemanticMemory: Complex network performance: KNOWS\n\n--- Concurrent Access Simulation ---\n\u274c Concurrent Access: Multi-agent simulation: KNOWS\n\n--- Enhanced Coverage Report ---\nMethods tested in this suite: 7\n\u2705 Successfully tested methods: get_memories_by_type, get_memory_summary\n\u274c Failed method tests: save_to_file,load_from_file, get_temporal_summary, consolidate_memories, get_episodes_by_type, get_concept_relationships\n\n--- Performance Summary ---\nPASS: CircularBuffer: Large batch operations - 0.40ms\n\n============================================================\nENHANCED TEST SUMMARY: 4/14 passed (28.6%)\nMETHOD COVERAGE: 28.6% (2/7 methods tested)\n============================================================\n\nFAILURES:\n  \u2022 CircularBuffer: save_to_file and load_from_file: File persistence failed\n  \u2022 TemporalMemory: get_temporal_summary: Invalid summary: {'total_memories': 3, 'time_span_hours': 24, 'hourly_distribution': {16: 1, 15: 1, 14: 1}, 'type_distribution': {'event': 2, 'thought': 1}, 'strength_distribution': {'strong': 1, 'medium': 2, 'weak': 0}, 'avg_strength': 0.5623952133129149}\n  \u2022 TemporalMemory: consolidate_memories: TemporalMemory.consolidate_memories() got an unexpected keyword argument 'min_strength'\n  \u2022 EpisodicMemory: get_episodes_by_type: Conversations: 0, Reflections: 0\n  \u2022 SemanticMemory: get_memory_summary: Invalid summary: {'total_concepts': 3, 'total_relations': 2, 'concept_types': {'person': 1, 'activity': 1, 'trait': 1}, 'relation_types': {'related_to': 1, 'has_a': 1}, 'avg_activation': 0.7000000000000001, 'highly_activated': 1, 'network_density': 0.6666666666666666}\n  \u2022 SemanticMemory: get_concept_relationships: KNOWS\n  \u2022 TemporalMemory: Edge case - expired memories: '>=' not supported between instances of 'list' and 'int'\n  \u2022 SemanticMemory: Edge case - concept limit: 'concept_1'\n  \u2022 SemanticMemory: Complex network performance: KNOWS\n  \u2022 Concurrent Access: Multi-agent simulation: KNOWS\n\n\ud83d\udca5 10 enhanced tests failed. Review errors above.\n",
+      "error_output": "",
+      "exit_code": 1,
+      "stats": {
+        "tests_passed": 4,
+        "tests_total": 14,
+        "coverage_percentage": 28.6
+      },
+      "end_time": "2025-08-01T16:25:02.177570"
+    },
+    "Stress and Load Tests": {
+      "name": "Stress and Load Tests",
+      "file": "test_stress_and_load.py",
+      "category": "performance",
+      "start_time": "2025-08-01T16:25:02.177688",
+      "success": false,
+      "execution_time": 0.13886108400765806,
+      "output": "\ud83d\udd25 Enhanced PIANO Memory Architecture - Stress and Load Testing\n======================================================================\nTesting system behavior under stress, high load, and resource constraints...\n\n--- High Volume Operations Test ---\n\u2705 CircularBuffer: High volume operations: 14.34ms (697309.6 ops/sec) (threshold: 5000.0ms)\n\ud83d\udcca CircularBuffer: High volume: Memory: 0.6MB, CPU: 0.0%\n\u2705 CircularBuffer: High volume integrity\n\n--- Memory Pressure Scenarios ---\n\u2705 Memory Pressure: Multi-system creation: 5.47ms (threshold: 10000.0ms)\n\ud83d\udcca Memory Pressure: Multi-system: Memory: 1.1MB, CPU: 0.0%\n\u2705 Memory Pressure: Multi-system queries: 3.21ms (threshold: 2000.0ms)\n\u274c Memory Pressure: Memory cleanup: Only -0.1MB released from 1.1MB\n\n--- Concurrent Thread Safety Test ---\n\u274c Concurrent Thread Safety: Errors occurred: Errors: 4, Completed threads: 0\n\u274c Concurrent Thread Safety: Data integrity: Expected (0.0, 0.0), got 84\n\n--- Long Running Simulation Test ---\n\u274c Long Running: Simulation: unhashable type: 'set'\n\n--- Resource Exhaustion Recovery Test ---\n\u2705 Resource Exhaustion: CircularBuffer overflow handling\n\u274c Resource Exhaustion: Recovery: 'concept_1'\n\n============================================================\nSTRESS TEST SUMMARY: 2/7 passed (28.6%)\n============================================================\n\nPERFORMANCE METRICS:\n  PASS: CircularBuffer: High volume operations - 14.34ms (697309.6 ops/sec)\n  PASS: Memory Pressure: Multi-system creation - 5.47ms\n  PASS: Memory Pressure: Multi-system queries - 3.21ms\n\nRESOURCE USAGE:\n  CircularBuffer: High volume: 0.6MB memory, 0.0% CPU\n  Memory Pressure: Multi-system: 1.1MB memory, 0.0% CPU\n\nFAILURES:\n  \u2022 Memory Pressure: Memory cleanup: Only -0.1MB released from 1.1MB\n  \u2022 Concurrent Thread Safety: Errors occurred: Errors: 4, Completed threads: 0\n  \u2022 Concurrent Thread Safety: Data integrity: Expected (0.0, 0.0), got 84\n  \u2022 Long Running: Simulation: unhashable type: 'set'\n  \u2022 Resource Exhaustion: Recovery: 'concept_1'\n\n\ud83d\udca5 5 stress tests failed. System may need hardening.\n\u26a0\ufe0f  Review failures above for potential reliability issues.\n\n\ud83d\udcca Total memory impact: 1.7MB, Average CPU: 0.0%\n",
+      "error_output": "",
+      "exit_code": 1,
+      "stats": {
+        "operations_per_second": 697309.6,
+        "tests_passed": 2,
+        "tests_total": 7
+      },
+      "end_time": "2025-08-01T16:25:02.316557"
+    },
+    "Security and Validation Tests": {
+      "name": "Security and Validation Tests",
+      "file": "test_security_and_validation.py",
+      "category": "security",
+      "start_time": "2025-08-01T16:25:02.316660",
+      "success": false,
+      "execution_time": 0.04336879204493016,
+      "output": "\ud83d\udee1\ufe0f  Enhanced PIANO Memory Architecture - Security and Validation Testing\n======================================================================\nTesting input validation, data integrity, and security protections...\n\n--- Input Validation and Sanitization ---\n\ud83d\udea8 VULNERABILITY [MEDIUM]: Input Length - Accepts extremely long input: 100000 chars\n\ud83d\udea8 VULNERABILITY [HIGH]: XSS Protection - Script tags not filtered from input\n\ud83d\udea8 VULNERABILITY [LOW]: Binary Data - Binary data accepted in text fields\n\u2705 Input Validation: Malicious string handling\n\ud83d\udea8 VULNERABILITY [MEDIUM]: Type Validation - Accepts invalid importance type: <class 'NoneType'>\n\ud83d\udea8 VULNERABILITY [MEDIUM]: Type Validation - Accepts invalid importance type: <class 'str'>\n\u2705 Input Validation: Type checking\n\n--- Data Integrity and Consistency ---\n\u274c Data Integrity: Serialization: 'memories'\n\u274c Data Integrity: Consistency: KNOWS\n\n--- File System Security ---\n\u274c File System Security: Path traversal: name 'SecurityError' is not defined\n\u2705 File System Security: File permissions\n\n--- Memory Leak Protection ---\n\u2705 Memory Leak: Circular reference handling\n\u2705 Memory Leak: Resource cleanup\n\n--- Serialization Security ---\n\u2705 Serialization Security: Malicious payload rejection\n\n--- Information Disclosure Protection ---\n\u2705 Information Disclosure: Error message safety\n\n--- Denial of Service Protection ---\n\u274c DoS Protection: Complexity attacks: KNOWS\n\n============================================================\nSECURITY TEST SUMMARY: 7/11 passed (63.6%)\n============================================================\nSECURITY CHECKS: 7/11 passed\n  \u2705 input_validation\n  \u2705 type_validation\n  \u274c data_integrity\n  \u274c consistency_check\n  \u274c path_traversal\n  \u2705 file_permissions\n  \u2705 circular_refs\n  \u2705 resource_cleanup\n  \u2705 serialization_security\n  \u2705 info_disclosure\n  \u274c dos_protection\n\n\ud83d\udea8 VULNERABILITIES FOUND: 5\n  [MEDIUM] Input Length: Accepts extremely long input: 100000 chars\n  [HIGH] XSS Protection: Script tags not filtered from input\n  [LOW] Binary Data: Binary data accepted in text fields\n  [MEDIUM] Type Validation: Accepts invalid importance type: <class 'NoneType'>\n  [MEDIUM] Type Validation: Accepts invalid importance type: <class 'str'>\n\nFAILURES:\n  \u2022 Data Integrity: Serialization: 'memories'\n  \u2022 Data Integrity: Consistency: KNOWS\n  \u2022 File System Security: Path traversal: name 'SecurityError' is not defined\n  \u2022 DoS Protection: Complexity attacks: KNOWS\n\n\ud83d\udea8 SECURITY ISSUES DETECTED!\n\u26a0\ufe0f  1 HIGH severity vulnerabilities found!\n\n\ud83d\udccb SECURITY RECOMMENDATIONS:\n\u2022 Implement input validation and sanitization for all user inputs\n\u2022 Add rate limiting to prevent DoS attacks\n\u2022 Use secure file permissions (600) for memory files\n\u2022 Implement proper error handling to prevent information disclosure\n\u2022 Add integrity checks for serialized data\n\u2022 Consider encryption for sensitive memory data\n",
+      "error_output": "",
+      "exit_code": 1,
+      "stats": {
+        "tests_passed": 7,
+        "tests_total": 11
+      },
+      "end_time": "2025-08-01T16:25:02.360037"
+    },
+    "Compatibility and Regression Tests": {
+      "name": "Compatibility and Regression Tests",
+      "file": "test_compatibility_and_regression.py",
+      "category": "compatibility",
+      "start_time": "2025-08-01T16:25:02.360286",
+      "success": false,
+      "execution_time": 0.07313283300027251,
+      "output": "\ud83d\udd04 Enhanced PIANO Memory Architecture - Compatibility and Regression Testing\n======================================================================\nTesting backward compatibility, API stability, and performance regressions...\n\n--- API Backward Compatibility ---\n\u2705 API Compatibility: CircularBuffer methods\n\u2705 API Compatibility: SemanticMemory methods\n\n--- Data Format Compatibility ---\n\u26a0\ufe0f  COMPATIBILITY [CRITICAL]: Data Format - Cannot load legacy CircularBuffer data: 'next_id'\n\u26a0\ufe0f  COMPATIBILITY [MEDIUM]: Data Format - Future data format causes errors: 'next_id'\n\n--- Performance Regression Testing ---\n\ud83d\udcca circular_buffer_add_100: 0.14ms (baseline: 5.00ms)\n\ud83d\udcca circular_buffer_retrieve_10: 0.00ms (baseline: 1.00ms)\n\ud83d\udcca temporal_memory_add_100: 0.33ms (baseline: 10.00ms)\n\ud83d\udcca temporal_memory_retrieve_recent: 0.34ms (baseline: 5.00ms)\n\ud83d\udcca semantic_memory_add_50: 0.10ms (baseline: 20.00ms)\n\ud83d\udcca semantic_memory_activate_retrieve: 0.01ms (baseline: 15.00ms)\n\n--- Version Migration Compatibility ---\n\u26a0\ufe0f  COMPATIBILITY [CRITICAL]: Migration - Version migration failed: 'activation_decay'\n\n--- Dependency Compatibility ---\n\u2705 Dependency: Datetime format datetime\n\u2705 Dependency: Datetime format str\n\u2705 Dependency: Datetime format str\n\n--- Interface Stability ---\n\u2705 Interface: Method signature stability\n\u26a0\ufe0f  COMPATIBILITY [HIGH]: Interface - add_memory returns <class 'dict'>, expected str\n\u2705 Interface: Return type stability\n\n--- Error Handling Compatibility ---\n\u26a0\ufe0f  COMPATIBILITY [MEDIUM]: Error Handling - Expected exception not raised\n\u26a0\ufe0f  COMPATIBILITY [MEDIUM]: Error Handling - Expected exception not raised\n\u26a0\ufe0f  COMPATIBILITY [MEDIUM]: Error Handling - Expected exception not raised\n\u2705 Error Handling: Exception consistency\n\n============================================================\nCOMPATIBILITY TEST SUMMARY: 8/8 passed (100.0%)\n============================================================\n\n\u26a0\ufe0f  COMPATIBILITY ISSUES: 7\n  [CRITICAL] Data Format: Cannot load legacy CircularBuffer data: 'next_id'\n  [MEDIUM] Data Format: Future data format causes errors: 'next_id'\n  [CRITICAL] Migration: Version migration failed: 'activation_decay'\n  [HIGH] Interface: add_memory returns <class 'dict'>, expected str\n  [MEDIUM] Error Handling: Expected exception not raised\n  [MEDIUM] Error Handling: Expected exception not raised\n  [MEDIUM] Error Handling: Expected exception not raised\n\n\ud83d\udcca NO PERFORMANCE REGRESSIONS DETECTED\n\n\u26a0\ufe0f  COMPATIBILITY ISSUES DETECTED!\n\ud83d\udea8 2 CRITICAL compatibility issues require immediate attention!\n\n\ud83d\udccb COMPATIBILITY RECOMMENDATIONS:\n\u2022 Maintain semantic versioning for API changes\n\u2022 Provide migration utilities for data format changes\n\u2022 Add deprecation warnings before removing features\n\u2022 Monitor performance benchmarks in CI/CD pipeline\n\u2022 Test with multiple Python versions and dependency versions\n\u2022 Document all breaking changes in changelog\n",
+      "error_output": "",
+      "exit_code": 1,
+      "stats": {
+        "tests_passed": 8,
+        "tests_total": 8
+      },
+      "end_time": "2025-08-01T16:25:02.433429"
+    }
+  },
+  "timestamp": "2025-08-01T16:25:02.433948"
+}

@@ -1,0 +1,21 @@
+<Generate Goal>
+
+    <Context>
+    You are a contestant on the dating show "Hearts on Fire."
+    </Context>
+
+    <Your Current Emotional State>
+    !<INPUT 0>! // JSON object of the agent's current emotional state
+    </Your Current Emotional State>
+
+    <Current Game State>
+    !<INPUT 1>! // A summary of the current episode and event
+    </Current Game State>
+
+    <Instructions>
+    Based on your current emotional state and the game state, generate a new goal for yourself. The goal should be a short, actionable statement.
+    </Instructions>
+
+    <Goal> </Goal>
+
+</Generate Goal>

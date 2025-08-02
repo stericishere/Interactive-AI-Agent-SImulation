@@ -1,0 +1,105 @@
+{
+  "overall_stats": {
+    "total_suites": 7,
+    "passed_suites": 0,
+    "failed_suites": 7,
+    "total_execution_time": 0.755694166989997,
+    "coverage_improvement": 0,
+    "vulnerabilities_found": 0,
+    "performance_regressions": 0
+  },
+  "results": {
+    "Memory Systems Tests": {
+      "name": "Memory Systems Tests",
+      "file": "test_memory_systems.py",
+      "category": "functional",
+      "start_time": "2025-08-01T16:24:50.761433",
+      "success": false,
+      "execution_time": 0.02839670900721103,
+      "output": "",
+      "error_output": "Traceback (most recent call last):\n  File \"/Applications/Projects/Open source/generative_agents/dating_show/agents/Test/test_memory_systems.py\", line 19, in <module>\n    from memory_structures.circular_buffer import CircularBuffer, CircularBufferReducer\nModuleNotFoundError: No module named 'memory_structures'\n",
+      "exit_code": 1,
+      "stats": {},
+      "end_time": "2025-08-01T16:24:50.789844"
+    },
+    "Integration Tests": {
+      "name": "Integration Tests",
+      "file": "test_integration.py",
+      "category": "integration",
+      "start_time": "2025-08-01T16:24:50.789930",
+      "success": false,
+      "execution_time": 0.08293029200285673,
+      "output": "",
+      "error_output": "Traceback (most recent call last):\n  File \"/Applications/Projects/Open source/generative_agents/dating_show/agents/Test/test_integration.py\", line 18, in <module>\n    from memory_structures.circular_buffer import CircularBuffer, CircularBufferReducer\nModuleNotFoundError: No module named 'memory_structures'\n",
+      "exit_code": 1,
+      "stats": {},
+      "end_time": "2025-08-01T16:24:50.872868"
+    },
+    "Simple Integration Tests": {
+      "name": "Simple Integration Tests",
+      "file": "test_integration_simple.py",
+      "category": "integration",
+      "start_time": "2025-08-01T16:24:50.872935",
+      "success": false,
+      "execution_time": 0.022613040986470878,
+      "output": "",
+      "error_output": "Traceback (most recent call last):\n  File \"/Applications/Projects/Open source/generative_agents/dating_show/agents/Test/test_integration_simple.py\", line 17, in <module>\n    from memory_structures.circular_buffer import CircularBuffer, CircularBufferReducer\nModuleNotFoundError: No module named 'memory_structures'\n",
+      "exit_code": 1,
+      "stats": {},
+      "end_time": "2025-08-01T16:24:50.895556"
+    },
+    "Comprehensive Coverage Tests": {
+      "name": "Comprehensive Coverage Tests",
+      "file": "test_comprehensive_coverage.py",
+      "category": "coverage",
+      "start_time": "2025-08-01T16:24:50.895621",
+      "success": false,
+      "execution_time": 0.03994445793796331,
+      "output": "",
+      "error_output": "Traceback (most recent call last):\n  File \"/Applications/Projects/Open source/generative_agents/dating_show/agents/Test/test_comprehensive_coverage.py\", line 21, in <module>\n    from memory_structures.circular_buffer import CircularBuffer, CircularBufferReducer\nModuleNotFoundError: No module named 'memory_structures'\n",
+      "exit_code": 1,
+      "stats": {},
+      "end_time": "2025-08-01T16:24:50.935573"
+    },
+    "Stress and Load Tests": {
+      "name": "Stress and Load Tests",
+      "file": "test_stress_and_load.py",
+      "category": "performance",
+      "start_time": "2025-08-01T16:24:50.935637",
+      "success": false,
+      "execution_time": 0.4832649580202997,
+      "output": "",
+      "error_output": "Traceback (most recent call last):\n  File \"/Applications/Projects/Open source/generative_agents/dating_show/agents/Test/test_stress_and_load.py\", line 23, in <module>\n    from memory_structures.circular_buffer import CircularBuffer, CircularBufferReducer\nModuleNotFoundError: No module named 'memory_structures'\n",
+      "exit_code": 1,
+      "stats": {},
+      "end_time": "2025-08-01T16:24:51.418905"
+    },
+    "Security and Validation Tests": {
+      "name": "Security and Validation Tests",
+      "file": "test_security_and_validation.py",
+      "category": "security",
+      "start_time": "2025-08-01T16:24:51.418973",
+      "success": false,
+      "execution_time": 0.029028834076598287,
+      "output": "",
+      "error_output": "Traceback (most recent call last):\n  File \"/Applications/Projects/Open source/generative_agents/dating_show/agents/Test/test_security_and_validation.py\", line 20, in <module>\n    from memory_structures.circular_buffer import CircularBuffer, CircularBufferReducer\nModuleNotFoundError: No module named 'memory_structures'\n",
+      "exit_code": 1,
+      "stats": {},
+      "end_time": "2025-08-01T16:24:51.448009"
+    },
+    "Compatibility and Regression Tests": {
+      "name": "Compatibility and Regression Tests",
+      "file": "test_compatibility_and_regression.py",
+      "category": "compatibility",
+      "start_time": "2025-08-01T16:24:51.448068",
+      "success": false,
+      "execution_time": 0.0689615000737831,
+      "output": "",
+      "error_output": "Traceback (most recent call last):\n  File \"/Applications/Projects/Open source/generative_agents/dating_show/agents/Test/test_compatibility_and_regression.py\", line 22, in <module>\n    from memory_structures.circular_buffer import CircularBuffer, CircularBufferReducer\nModuleNotFoundError: No module named 'memory_structures'\n",
+      "exit_code": 1,
+      "stats": {},
+      "end_time": "2025-08-01T16:24:51.517037"
+    }
+  },
+  "timestamp": "2025-08-01T16:24:51.517555"
+}

@@ -1,0 +1,17 @@
+<Interpret Action>
+
+<Context>
+You just observed the following action:
+</Context>
+
+<action></action>
+
+<relationships></relationships>
+
+<Instructions>
+In a single sentence, describe what you think this action means. What is the social implication of this action?
+</Instructions>
+
+<Interpretation>
+</Interpretation>
+

@@ -1,0 +1,16 @@
+**Generate Confessional**
+
+<Context>
+You are in the confessional room, reflecting on the recent events of the show.
+</Context>
+<recent_events></recent_events>
+
+<emotional_state></emotional_state>
+
+<Instructions>
+Generate a short monologue (2-3 sentences) that expresses your current thoughts and feelings. Be honest and vulnerable.
+</Instructions>
+
+<Confessional>
+</Confessional>
+

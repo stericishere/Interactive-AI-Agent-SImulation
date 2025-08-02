@@ -1,0 +1,18 @@
+<Decide on Rose>
+
+<Context>
+It's the rose ceremony. You must choose one contestant to give your rose to. This decision should be based on the connection you've formed with them.
+</Context>
+
+<relationships></relationships>
+
+<Instructions>
+Choose one contestant to give your rose to and provide a brief reason for your choice.
+</Instructions>
+
+<Output Format (JSON)>
+{
+  "recipient": "<contestant_name>",
+  "reason": "<your_reason>"
+}
+</Output Format (JSON)>

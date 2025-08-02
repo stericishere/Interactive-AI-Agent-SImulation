@@ -1,0 +1,16 @@
+**Generate Dialogue**
+
+<Context>
+You are currently talking to <target_agent></target_agent> during the <event></event> event.
+
+<conversation_history></conversation_history>
+
+<goal></goal>
+</Context>
+
+<Instructions>
+Generate the next line of dialogue. Your response should be consistent with your personality and current goal.
+</Instructions>
+
+<Dialogue>
+</Dialogue>

@@ -1,0 +1,28 @@
+<Update Emotional State>
+
+  <Context>
+  The following event just occurred:
+
+    <Event>
+    !<INPUT 0>! // e.g., "You received a rose from Bob.", "You had an argument with Alice."
+    </Event>
+
+    <Your Current Emotional State>
+    !<INPUT 1>! // JSON object of the agent's current emotional state
+    </Your Current Emotional State>
+  </Context>
+
+  <Instructions>
+  Based on the event, update your emotional state. The values should be between 0.0 and 1.0.
+  </Instructions>
+
+  <Output Format (JSON)>
+  {
+    "happiness": <new_happiness_value>,
+    "jealousy": <new_jealousy_value>,
+    "attraction": {
+      "<agent_name>": <new_attraction_value>
+    }
+  }
+  </Output Format (JSON)>
+</Update Emotional State>

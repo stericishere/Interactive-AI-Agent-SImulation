@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dating Show - Live Dashboard</title>
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div id="app">
+        <header class="header">
+            <h1>Dating Show - Live Dashboard</h1>
+            <div class="status-bar">
+                <div class="simulation-status" id="sim-status">
+                    <span class="status-indicator" id="status-indicator"></span>
+                    <span id="status-text">{{ simulation.mode if simulation else 'Disconnected' }}</span>
+                </div>
+                <div class="step-counter">
+                    Step: <span id="current-step">{{ simulation.current_step if simulation else 0 }}</span>
+                </div>
+                <div class="connection-indicator" id="ws-status">
+                    <span class="ws-indicator" id="ws-indicator"></span>
+                    WebSocket
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="grid-container">
+                <!-- Agent Cards Section -->
+                <section class="agents-section">
+                    <h2>Contestants</h2>
+                    <div class="agents-grid" id="agents-grid">
+                        {% if simulation and simulation.agents %}
+                            {% for agent in simulation.agents %}
+                            <div class="agent-card" data-agent="{{ agent.name }}">
+                                <div class="agent-header">
+                                    <h3>{{ agent.name }}</h3>
+                                    <span class="agent-role">{{ agent.role }}</span>
+                                </div>
+                                <div class="agent-status">
+                                    <div class="location">📍 {{ agent.current_location or 'Unknown' }}</div>
+                                    <div class="action">🎬 {{ agent.current_action or 'Idle' }}</div>
+                                </div>
+                                <div class="agent-position">
+                                    Position: ({{ agent.position.x }}, {{ agent.position.y }})
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="no-agents">No active agents</div>
+                        {% endif %}
+                    </div>
+                </section>
+
+                <!-- Controls Section -->
+                <section class="controls-section">
+                    <h2>Simulation Controls</h2>
+                    <div class="control-panel">
+                        <button id="step-btn" class="control-btn primary">Advance Step</button>
+                        <button id="pause-btn" class="control-btn">Pause</button>
+                        <button id="reset-btn" class="control-btn danger">Reset</button>
+                    </div>
+                    <div class="auto-controls">
+                        <label>
+                            <input type="checkbox" id="auto-advance"> Auto-advance
+                        </label>
+                        <select id="speed-select">
+                            <option value="1000">1s</option>
+                            <option value="2000" selected>2s</option>
+                            <option value="5000">5s</option>
+                            <option value="10000">10s</option>
+                        </select>
+                    </div>
+                </section>
+
+                <!-- Environment Section -->
+                <section class="environment-section">
+                    <h2>Environment</h2>
+                    <div class="environment-info">
+                        <div class="env-item">
+                            <strong>Time:</strong> 
+                            <span id="env-time">{{ simulation.environment.time_of_day if simulation else 'Unknown' }}</span>
+                        </div>
+                        <div class="env-item">
+                            <strong>Weather:</strong> 
+                            <span id="env-weather">{{ simulation.environment.weather if simulation else 'Unknown' }}</span>
+                        </div>
+                        <div class="env-item">
+                            <strong>Active Events:</strong> 
+                            <span id="env-events">
+                                {{ simulation.environment.active_events|length if simulation else 0 }} events
+                            </span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Real-time Updates Section -->
+                <section class="updates-section">
+                    <h2>Live Updates</h2>
+                    <div class="updates-feed" id="updates-feed">
+                        <div class="update-item">Dashboard initialized</div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/js/dashboard.js"></script>
+    <script>
+        // Initialize dashboard with server data
+        window.initialSimulation = {{ simulation.json() if simulation else 'null' }};
+        window.dashboard.init();
+    </script>
+</body>
+</html>

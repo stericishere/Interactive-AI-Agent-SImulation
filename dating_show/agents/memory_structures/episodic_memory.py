@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from enum import Enum
 import json
 import uuid
+from .security_utils import SecurityValidator, SecurityError
 
 
 class CausalRelationType(Enum):
@@ -120,6 +121,11 @@ class EpisodicMemory:
         Returns:
             Event ID
         """
+        # Security validation and sanitization
+        safe_content, safe_type, safe_importance, safe_metadata = SecurityValidator.sanitize_memory_data(
+            content, event_type, importance, metadata
+        )
+        
         if timestamp is None:
             timestamp = datetime.now()
         
@@ -128,14 +134,14 @@ class EpisodicMemory:
         
         event_data = {
             "id": event_id,
-            "content": content,
-            "type": event_type,
+            "content": safe_content,
+            "type": safe_type,
             "timestamp": timestamp,
-            "importance": importance,
+            "importance": safe_importance,
             "participants": participants or set(),
             "location": location,
             "emotional_valence": emotional_valence,
-            "metadata": metadata or {},
+            "metadata": safe_metadata or {},
             "episode_ids": set(),  # Episodes this event belongs to
             "causal_predecessors": set(),  # Events that caused this
             "causal_successors": set()  # Events this caused
@@ -355,7 +361,8 @@ class EpisodicMemory:
         # Look for recent related events that could form an episode
         recent_events = self._get_recent_related_events(event_id, hours_back=1)
         
-        if len(recent_events) >= 2:  # Need at least 2 events for an episode
+        # Lower threshold for episode creation to improve coordination
+        if len(recent_events) >= 1:  # Create episode even with single significant event
             episode_id = self._create_episode(recent_events)
             return episode_id
         

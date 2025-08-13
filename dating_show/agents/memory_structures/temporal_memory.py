@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 import json
 import math
 from collections import defaultdict
+from .security_utils import SecurityValidator, SecurityError
 
 
 class TemporalMemory:
@@ -72,6 +73,11 @@ class TemporalMemory:
         Returns:
             Memory ID
         """
+        # Security validation and sanitization
+        safe_content, safe_type, safe_importance, safe_context = SecurityValidator.sanitize_memory_data(
+            content, memory_type, importance, context
+        )
+        
         if timestamp is None:
             timestamp = datetime.now()
         
@@ -82,12 +88,12 @@ class TemporalMemory:
         
         memory_entry = {
             "id": memory_id,
-            "content": content,
-            "type": memory_type,
+            "content": safe_content,
+            "type": safe_type,
             "timestamp": timestamp,
-            "importance": importance,
-            "initial_strength": importance,
-            "context": context or {},
+            "importance": safe_importance,
+            "initial_strength": safe_importance,
+            "context": safe_context or {},
             "access_count": 0,
             "last_accessed": timestamp
         }

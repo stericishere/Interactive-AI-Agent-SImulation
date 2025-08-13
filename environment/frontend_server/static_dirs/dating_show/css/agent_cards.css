@@ -1,0 +1,451 @@
+/* Agent Cards Specific CSS */
+
+/* Agent Grid Layout */
+.agent-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.agent-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+/* Agent Card Styling */
+.agent-card {
+    transition: all 0.3s ease;
+    transform-origin: center;
+    height: 100%;
+}
+
+.agent-card:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 12px 32px rgba(233, 30, 99, 0.15);
+}
+
+.agent-card .card {
+    height: 100%;
+    border: 2px solid transparent;
+    background: linear-gradient(white, white), 
+                linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    background-clip: padding-box, border-box;
+}
+
+.agent-card:hover .card {
+    border-color: var(--primary-color);
+}
+
+/* Agent Avatar */
+.agent-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 3px solid;
+    border-color: var(--primary-color);
+    object-fit: cover;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.agent-card:hover .agent-avatar {
+    border-color: var(--secondary-color);
+    transform: scale(1.1);
+    box-shadow: 0 4px 16px rgba(233, 30, 99, 0.3);
+}
+
+/* Agent Name and Role */
+.agent-name {
+    font-weight: 700;
+    color: #2c3e50;
+    font-size: 1.1rem;
+    margin: 0;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.agent-role {
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.8;
+}
+
+/* Status Badges */
+.agent-status {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    animation: statusPulse 3s infinite;
+}
+
+@keyframes statusPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.status-online {
+    background: linear-gradient(135deg, var(--success-color), #66bb6a);
+    color: white;
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+}
+
+.status-idle {
+    background: linear-gradient(135deg, var(--warning-color), #ffb74d);
+    color: white;
+    box-shadow: 0 0 10px rgba(255, 152, 0, 0.3);
+}
+
+.status-busy {
+    background: linear-gradient(135deg, var(--info-color), #64b5f6);
+    color: white;
+    box-shadow: 0 0 10px rgba(33, 150, 243, 0.3);
+}
+
+.status-offline {
+    background: linear-gradient(135deg, var(--muted-color), #9e9e9e);
+    color: white;
+    box-shadow: 0 0 10px rgba(108, 117, 125, 0.3);
+}
+
+/* Current Action Display */
+.current-action {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
+    min-height: 1.2em;
+}
+
+.current-action-badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+/* Location Display */
+.current-location {
+    color: var(--muted-color);
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-top: 0.25rem;
+    min-height: 1.1em;
+}
+
+.current-location:before {
+    content: "📍 ";
+    margin-right: 0.25rem;
+}
+
+/* Conversation Display */
+.current-conversation {
+    color: var(--info-color);
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+    min-height: 1.1em;
+}
+
+.current-conversation:empty:after {
+    content: "Not in conversation";
+    color: var(--muted-color);
+    font-style: normal;
+}
+
+/* Skills Section */
+.skills-section {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.skill-bars {
+    margin-top: 0.5rem;
+}
+
+.skill-bars .progress {
+    height: 6px;
+    border-radius: 10px;
+    background-color: #f8f9fa;
+    margin-bottom: 0.5rem;
+    overflow: hidden;
+}
+
+.skill-bars .progress-bar {
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    border-radius: 10px;
+    transition: width 0.8s ease;
+    position: relative;
+}
+
+.skill-bars .progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.skill-name {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #495057;
+    text-transform: capitalize;
+}
+
+.skill-level {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+/* Last Update Time */
+.agent-last-update {
+    font-size: 0.7rem;
+    color: var(--muted-color);
+    margin-top: 0.25rem;
+}
+
+.agent-last-update:before {
+    content: "🕒 ";
+}
+
+/* Card Footer Buttons */
+.agent-card .card-footer {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-top: 1px solid #dee2e6;
+    padding: 1rem;
+}
+
+.agent-card .card-footer .btn {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.agent-card .card-footer .btn:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: left 0.5s ease;
+}
+
+.agent-card .card-footer .btn:hover:before {
+    left: 100%;
+}
+
+.agent-card .card-footer .btn-outline-primary {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.agent-card .card-footer .btn-outline-primary:hover {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-color: transparent;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(233, 30, 99, 0.3);
+}
+
+.agent-card .card-footer .btn-outline-secondary:hover {
+    background: linear-gradient(135deg, #6c757d, #8d959d);
+    border-color: transparent;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+}
+
+.agent-card .card-footer .btn-outline-info:hover {
+    background: linear-gradient(135deg, var(--info-color), #64b5f6);
+    border-color: transparent;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}
+
+/* List View Specific Styles */
+.agent-list .agent-card {
+    max-width: none;
+}
+
+.agent-list .agent-card .card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.agent-list .agent-card .card-header {
+    flex: 0 0 250px;
+    height: auto;
+}
+
+.agent-list .agent-card .card-body {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.agent-list .agent-card .card-footer {
+    flex: 0 0 200px;
+}
+
+/* Loading States */
+.agent-card.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.agent-card.loading .card {
+    position: relative;
+    overflow: hidden;
+}
+
+.agent-card.loading .card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* Error States */
+.agent-card.error {
+    opacity: 0.5;
+    filter: grayscale(50%);
+}
+
+.agent-card.error .card {
+    border-color: var(--danger-color);
+}
+
+.agent-card.error .agent-status {
+    background: var(--danger-color);
+    color: white;
+}
+
+/* Special Agent Types */
+.agent-card[data-role="host"] .card-header {
+    background: linear-gradient(135deg, #ff6b35, #f7931e);
+}
+
+.agent-card[data-role="contestant"] .card-header {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.agent-card[data-role="producer"] .card-header {
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+}
+
+.agent-card[data-role="participant"] .card-header {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .agent-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .agent-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .agent-card .card-header {
+        padding: 1rem;
+    }
+    
+    .agent-card .card-body {
+        padding: 1rem;
+    }
+    
+    .agent-card .card-footer {
+        padding: 1rem;
+    }
+    
+    .agent-card .card-footer .btn {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.6rem;
+    }
+    
+    /* Stack buttons vertically on small screens */
+    .agent-card .card-footer .d-grid {
+        gap: 0.5rem;
+    }
+    
+    .agent-card .card-footer .btn {
+        margin-bottom: 0.25rem;
+    }
+    
+    .agent-list .agent-card .card {
+        flex-direction: column;
+    }
+    
+    .agent-list .agent-card .card-header,
+    .agent-list .agent-card .card-body,
+    .agent-list .agent-card .card-footer {
+        flex: none;
+        width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    .agent-avatar {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .agent-name {
+        font-size: 1rem;
+    }
+    
+    .agent-role {
+        font-size: 0.75rem;
+    }
+    
+    .skills-section {
+        margin-top: 0.5rem;
+        padding-top: 0.5rem;
+    }
+    
+    .skill-bars .progress {
+        height: 4px;
+        margin-bottom: 0.25rem;
+    }
+}

@@ -7,6 +7,7 @@ Enhanced PIANO architecture implementation for Phase 1.
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 import json
+from .security_utils import SecurityValidator, SecurityError
 
 
 class CircularBufferReducer:
@@ -78,15 +79,20 @@ class CircularBuffer:
         Returns:
             The created memory entry
         """
+        # Security validation and sanitization
+        safe_content, safe_type, safe_importance, safe_metadata = SecurityValidator.sanitize_memory_data(
+            content, memory_type, importance, metadata
+        )
+        
         timestamp = datetime.now()
         
         memory_entry = {
             "id": f"mem_{self._next_id}",
-            "content": content,
-            "type": memory_type,
+            "content": safe_content,
+            "type": safe_type,
             "timestamp": timestamp,
-            "importance": importance,
-            "metadata": metadata or {},
+            "importance": safe_importance,
+            "metadata": safe_metadata or {},
             "accessed_count": 0,
             "last_accessed": timestamp
         }
@@ -275,26 +281,38 @@ class CircularBuffer:
     
     def save_to_file(self, filepath: str) -> None:
         """
-        Save buffer to JSON file.
+        Save buffer to JSON file with security validation.
         
         Args:
             filepath: Path to save the buffer data
+            
+        Raises:
+            SecurityError: If filepath is dangerous
         """
-        with open(filepath, 'w') as f:
+        # Validate file path for security
+        safe_filepath = SecurityValidator.validate_filepath(filepath)
+        
+        with open(safe_filepath, 'w') as f:
             json.dump(self.to_dict(), f, indent=2)
     
     @classmethod
     def load_from_file(cls, filepath: str) -> 'CircularBuffer':
         """
-        Load buffer from JSON file.
+        Load buffer from JSON file with security validation.
         
         Args:
             filepath: Path to load the buffer data from
         
         Returns:
             CircularBuffer instance
+            
+        Raises:
+            SecurityError: If filepath is dangerous
         """
-        with open(filepath, 'r') as f:
+        # Validate file path for security
+        safe_filepath = SecurityValidator.validate_filepath(filepath)
+        
+        with open(safe_filepath, 'r') as f:
             data = json.load(f)
         
         return cls.from_dict(data)

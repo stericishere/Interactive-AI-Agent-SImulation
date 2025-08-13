@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="text-align: center; padding: 4rem; margin: 2rem;">
+    <h1>🎭 Dating Show Frontend</h1>
+    <hr>
+    <h3>No simulation is currently running</h3>
+    <p>Please start the dating show backend first:</p>
+    <br>
+    <code>python dating_show/main.py --agents 10 --debug</code>
+    <br><br>
+    <p>Then the simulation will appear here with live agent animation!</p>
+    <br>
+    <a href="/simulator_home" class="btn btn-primary">🔄 Refresh</a>
+    <a href="/api/simulation/status" class="btn btn-info">📊 Check Status</a>
+</div>
+{% endblock content %}

@@ -1,0 +1,377 @@
+<div id="step" style="display:none">{{step}}</div>
+<div id="sim_code" style="display:none">{{sim_code}}</div>
+<div id="persona_name_list" style="display:none">{% for p_name, p_name_os in persona_names %}{{ p_name }}{% if not loop.last %},{% endif %}{% endfor %}</div>
+<div id="persona_init_pos" style="display:none">
+	{% for pos in persona_init_pos %}
+		<span>{{pos[0]}},{{pos[1]}},{{pos[2]}}</span>
+	{% endfor %}
+</div>
+
+<script type="text/javascript">
+	/*
+	  Main resources: 
+	  https://www.youtube.com/watch?v=cKIG1lKwLeo&t=401s&ab_channel=HongLy
+	  For the ground zero code, see the exported files from here: 
+	  https://codepen.io/mikewesthad/pen/BVeoYP?editors=1111 
+
+	  Also worth taking a look: 
+	  https://www.youtube.com/watch?v=fdXcD9X4NrQ&ab_channel=MorganPage
+	  and 
+	  https://www.youtube.com/watch?v=MR2CvWxOEsw&ab_channel=MattWilber
+	 */
+
+
+	// ###########################################################################
+	// PREAMBLE
+	// ###########################################################################
+
+	// <step> -- one full loop around all three phases determined by <phase> is 
+	// a step. We use this to link the steps in the backend. 
+	let step = parseInt(document.getElementById('step').innerHTML);
+	let sim_code = document.getElementById('sim_code').innerHTML;
+	// let persona_names = document.getElementById('persona_name_list').innerHTML.split(",");
+
+	let spans = document.getElementById('persona_init_pos').getElementsByTagName('span');
+	let persona_names = {};
+	for(var i = 0, l = spans.length; i < l; i++){
+		let x = spans[i].innerText.split(",");
+		persona_names[x[0]] = [parseInt(x[1]), parseInt(x[2])]
+	}
+
+	// Phaser 3.0 global settings. 
+	// Configuration meant to be passed to the main Phaser game instance. 
+	const config = {
+	  type: Phaser.AUTO,
+	  width: 1500,
+	  height: 800,
+	  parent: "game-container",
+	  pixelArt: true,
+	  physics: {
+	    default: "arcade",
+	    arcade: {
+	      gravity: { y: 0 } } },
+	  scene: {
+	    preload: preload,
+	    create: create,
+	    update: update } };
+
+	// Creating the game instance and setting up the main Phaser variables that  
+	// will be used in it. 
+	const game = new Phaser.Game(config);
+	let cursors;
+	let player;
+	let showDebug = false;
+
+	// Persona related variables. This should have the name of the persona as its 
+	// keys, and the instances of the Persona class as the values.
+	var spawn_tile_loc = {};
+
+	for (var key in persona_names){
+		spawn_tile_loc[key] = persona_names[key] ;
+	}
+	console.log("Spawn locations:", spawn_tile_loc);
+
+	var personas = {};
+	var pronunciatios = {};
+	let anims_direction;
+	let pre_anims_direction;
+	let pre_anims_direction_dict = {};
+
+	// ###########################################################################
+	// PERSONA CLASS
+	// ###########################################################################
+
+	// This persona class defines the agents in the games. 
+	class Persona {
+
+		constructor (scene, x, y, texture, frame, p_name) {
+
+			this.scene = scene
+			this.p_name = p_name
+
+			// Phaser sprite creation
+			this.sprite = scene.physics.add.sprite(x, y, texture, frame);
+
+			// Setting the persona's profile pic
+			// For now, we are giving everyone the same pic. 
+			this.sprite.setTexture("atlas", "misa-front")
+
+			// Setting the scale of the character. 
+			this.sprite.setScale(1.0);
+
+			// Setting collision boundaries
+			this.sprite.body.setSize(this.sprite.width * 0.8, this.sprite.height * 0.8);
+
+			// Movement variables
+			this.prevVelocity = {x: 0, y: 0};
+
+			this.temp_x = x;
+			this.temp_y = y;
+
+			this.curr_move = [this.temp_x, this.temp_y];
+
+		}
+
+		new_move(x_y) {
+			this.temp_x = x_y[0] * 32 + 16;
+			this.temp_y = x_y[1] * 32 + 16;
+			this.curr_move = [this.temp_x, this.temp_y];
+		}
+
+		update() {
+
+			let x_distance = Math.abs(this.sprite.body.x - (this.temp_x-this.sprite.width/2));
+			let y_distance = Math.abs(this.sprite.body.y - (this.temp_y-this.sprite.height+4));
+
+			if (x_distance < 3 && y_distance < 3) {
+				this.sprite.body.setVelocity(0);
+				return;
+			}
+
+			const speed = 60;
+			const prevVelocity = this.sprite.body.velocity.clone();
+
+			// Stop any previous movement from the last frame
+			this.sprite.body.setVelocity(0);
+
+			let direction = {x: 0, y: 0};
+
+			if (this.sprite.body.x > this.temp_x-this.sprite.width/2) {
+				direction.x = -1;
+			} else if (this.sprite.body.x < this.temp_x-this.sprite.width/2) {
+				direction.x = 1;
+			}
+
+			if (this.sprite.body.y > this.temp_y-this.sprite.height+4) {
+				direction.y = -1;
+			} else if (this.sprite.body.y < this.temp_y-this.sprite.height+4) {
+				direction.y = 1;
+			}
+
+			// Normalize diagonal movement
+			if (direction.x !== 0 && direction.y !== 0) {
+				direction.x *= 0.707;
+				direction.y *= 0.707;
+			}
+
+			this.sprite.body.setVelocity(speed * direction.x, speed * direction.y);
+
+			// Update animations
+			if (this.sprite.body.velocity.x < 0) {
+				this.sprite.anims.play("misa-left-walk", true);
+			} else if (this.sprite.body.velocity.x > 0) {
+				this.sprite.anims.play("misa-right-walk", true);
+			} else if (this.sprite.body.velocity.y < 0) {
+				this.sprite.anims.play("misa-back-walk", true);
+			} else if (this.sprite.body.velocity.y > 0) {
+				this.sprite.anims.play("misa-front-walk", true);
+			} else {
+				this.sprite.anims.stop();
+				if (prevVelocity.x < 0) this.sprite.setTexture("atlas", "misa-left");
+				else if (prevVelocity.x > 0) this.sprite.setTexture("atlas", "misa-right");
+				else if (prevVelocity.y < 0) this.sprite.setTexture("atlas", "misa-back");
+				else if (prevVelocity.y > 0) this.sprite.setTexture("atlas", "misa-front");
+			}
+		}
+	}
+
+	// ###########################################################################
+	// PHASER FUNCTIONS
+	// ###########################################################################
+
+	function preload() {
+		console.log("Preloading assets...");
+		
+		// Load the map tileset and tilemap
+		this.load.image("tiles", "/static/assets/the_ville/visuals/map_assets/v1_32x32.png");
+		this.load.tilemapTiledJSON("map", "/static/assets/the_ville/visuals/the_ville_dec31.json");
+
+		// Load character atlas
+		this.load.atlas("atlas", "/static/assets/characters/atlas.png", "/static/assets/characters/atlas.json");
+	}
+
+	function create() {
+		console.log("Creating scene...");
+
+		// Create tilemap
+		const map = this.make.tilemap({ key: "map" });
+		const tileset = map.addTilesetImage("Room_Builder_32x32", "tiles");
+
+		// Create layers (adjust layer names based on your tilemap)
+		const belowLayer = map.createLayer("Bottom", tileset, 0, 0);
+		const worldLayer = map.createLayer("Top", tileset, 0, 0);
+		const aboveLayer = map.createLayer("Above", tileset, 0, 0);
+
+		// Set collisions (adjust tile indices based on your tileset)
+		worldLayer.setCollisionByProperty({ collides: true });
+		aboveLayer.setDepth(10);
+
+		// Physics bounds
+		this.physics.world.bounds.width = map.widthInPixels;
+		this.physics.world.bounds.height = map.heightInPixels;
+
+		// Create character animations
+		const anims = this.anims;
+		anims.create({
+			key: "misa-left-walk",
+			frames: anims.generateFrameNames("atlas", { prefix: "misa-left-walk.", start: 0, end: 3, zeroPad: 3 }),
+			frameRate: 10,
+			repeat: -1
+		});
+		anims.create({
+			key: "misa-right-walk",
+			frames: anims.generateFrameNames("atlas", { prefix: "misa-right-walk.", start: 0, end: 3, zeroPad: 3 }),
+			frameRate: 10,
+			repeat: -1
+		});
+		anims.create({
+			key: "misa-front-walk",
+			frames: anims.generateFrameNames("atlas", { prefix: "misa-front-walk.", start: 0, end: 3, zeroPad: 3 }),
+			frameRate: 10,
+			repeat: -1
+		});
+		anims.create({
+			key: "misa-back-walk",
+			frames: anims.generateFrameNames("atlas", { prefix: "misa-back-walk.", start: 0, end: 3, zeroPad: 3 }),
+			frameRate: 10,
+			repeat: -1
+		});
+
+		// Create persona sprites
+		for (var persona_name in spawn_tile_loc) {
+			let x_y = spawn_tile_loc[persona_name];
+			let temp_persona = new Persona(this, x_y[0] * 32, x_y[1] * 32, "atlas", "misa-front", persona_name);
+			personas[persona_name] = temp_persona;
+			
+			// Add collision with world layer
+			this.physics.add.collider(temp_persona.sprite, worldLayer);
+		}
+
+		// Camera setup
+		this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+		this.cameras.main.setZoom(0.8);
+		
+		// Focus on the center of the map initially
+		this.cameras.main.centerOn(map.widthInPixels / 2, map.heightInPixels / 2);
+
+		cursors = this.input.keyboard.createCursorKeys();
+
+		console.log("Scene created successfully");
+		console.log("Personas created:", Object.keys(personas));
+	}
+
+	function update(time, delta) {
+		// Update all personas
+		for (var persona_name in personas) {
+			personas[persona_name].update();
+		}
+
+		// Camera controls with cursor keys
+		const cam = this.cameras.main;
+		const speed = 200;
+
+		if (cursors.left.isDown) {
+			cam.scrollX -= speed * delta / 1000;
+		} else if (cursors.right.isDown) {
+			cam.scrollX += speed * delta / 1000;
+		}
+
+		if (cursors.up.isDown) {
+			cam.scrollY -= speed * delta / 1000;
+		} else if (cursors.down.isDown) {
+			cam.scrollY += speed * delta / 1000;
+		}
+	}
+
+	// ###########################################################################
+	// SIMULATION MANAGEMENT
+	// ###########################################################################
+
+	let currentStep = step;
+	let isPlaying = false;
+
+	function startSimulation() {
+		console.log("Starting simulation...");
+		isPlaying = true;
+		updateSimulation();
+	}
+
+	function pauseSimulation() {
+		console.log("Pausing simulation...");
+		isPlaying = false;
+	}
+
+	async function updateSimulation() {
+		if (!isPlaying) return;
+
+		try {
+			// Get movement updates from backend
+			const response = await fetch('/update_environment/', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					step: currentStep,
+					sim_code: sim_code
+				})
+			});
+
+			const data = await response.json();
+
+			if (data["<step>"] !== -1) {
+				// Update agent positions and info
+				for (let persona_name in data) {
+					if (persona_name !== "<step>" && personas[persona_name]) {
+						let movement = data[persona_name].movement;
+						personas[persona_name].new_move([movement[0], movement[1]]);
+
+						// Update UI elements
+						let persona_name_underscore = persona_name.replace(" ", "_");
+						let actionElement = document.getElementById("current_action__" + persona_name_underscore);
+						let addressElement = document.getElementById("target_address__" + persona_name_underscore);
+						let chatElement = document.getElementById("chat__" + persona_name_underscore);
+
+						if (actionElement) actionElement.innerHTML = data[persona_name].pronunciatio || "idle";
+						if (addressElement) addressElement.innerHTML = data[persona_name].scratch?.curr_tile?.[0] || "unknown";
+						if (chatElement) chatElement.innerHTML = data[persona_name].chat || "";
+					}
+				}
+
+				currentStep++;
+			}
+
+		} catch (error) {
+			console.error('Error updating simulation:', error);
+		}
+
+		// Continue updating if still playing
+		if (isPlaying) {
+			setTimeout(updateSimulation, 2000); // Update every 2 seconds
+		}
+	}
+
+	// Button event listeners
+	document.addEventListener('DOMContentLoaded', function() {
+		const playButton = document.getElementById('play_button');
+		const pauseButton = document.getElementById('pause_button');
+
+		if (playButton) {
+			playButton.addEventListener('click', startSimulation);
+		}
+
+		if (pauseButton) {
+			pauseButton.addEventListener('click', pauseSimulation);
+		}
+
+		// Auto-start if in simulate mode
+		if ('{{mode}}' === 'simulate') {
+			setTimeout(() => {
+				startSimulation();
+			}, 2000);
+		}
+
+		console.log("Dating Show simulation initialized");
+	});
+
+</script>

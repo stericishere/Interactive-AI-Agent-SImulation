@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dating Show - {% block title %}Enhanced Agent Simulation{% endblock %}</title>
+    
+    <!-- Bootstrap 5 for modern UI -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- D3.js for data visualization -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    
+    <!-- Chart.js for performance metrics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Vis.js for network visualization -->
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    
+    <!-- Dating show specific styles -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'dating_show/css/dating_show_theme.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+    
+    <style>
+        /* Enhanced theme styles */
+        :root {
+            --primary-color: #e91e63;
+            --secondary-color: #ff4081;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --danger-color: #f44336;
+            --dark-color: #212529;
+            --light-color: #f8f9fa;
+        }
+        
+        body {
+            background-color: var(--light-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            color: white !important;
+        }
+        
+        .agent-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .agent-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+        
+        .agent-avatar {
+            border: 2px solid var(--primary-color);
+            object-fit: cover;
+        }
+        
+        .status-online { background-color: var(--success-color) !important; }
+        .status-idle { background-color: var(--warning-color) !important; }
+        .status-offline { background-color: var(--danger-color) !important; }
+        
+        .skill-progress {
+            background-color: #e9ecef;
+        }
+        
+        .skill-progress .progress-bar {
+            transition: width 0.3s ease;
+        }
+        
+        #connection-status {
+            z-index: 1050;
+        }
+        
+        .connection-connected {
+            background-color: var(--success-color) !important;
+        }
+        
+        .connection-disconnected {
+            background-color: var(--danger-color) !important;
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 12px 12px 0 0 !important;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+        }
+        
+        /* Loading spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Responsive design improvements */
+        @media (max-width: 768px) {
+            .agent-card {
+                margin-bottom: 1rem;
+            }
+            
+            .navbar-nav {
+                margin-top: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'dating_show_home' %}">
+                <i class="fas fa-heart"></i> Dating Show Simulation
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav ms-auto">
+                    <a class="nav-link" href="{% url 'dating_show_home' %}">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                    <a class="nav-link" href="{% url 'governance_panel' %}">
+                        <i class="fas fa-vote-yea"></i> Governance
+                    </a>
+                    <a class="nav-link" href="{% url 'social_network' %}">
+                        <i class="fas fa-project-diagram"></i> Social Network
+                    </a>
+                    <a class="nav-link" href="{% url 'analytics' %}">
+                        <i class="fas fa-chart-bar"></i> Analytics
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main class="container-fluid mt-3">
+        <!-- Alert Container for System Messages -->
+        <div id="alert-container"></div>
+        
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- WebSocket Connection Status -->
+    <div id="connection-status" class="position-fixed bottom-0 end-0 m-3">
+        <span class="badge connection-connected fs-6" id="status-indicator">
+            <i class="fas fa-wifi"></i> Connected
+        </span>
+    </div>
+    
+    <!-- Loading Modal -->
+    <div class="modal fade" id="loadingModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <div class="loading-spinner mb-3"></div>
+                    <div id="loading-message">Loading...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap 5 JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- WebSocket Client -->
+    <script>
+        // WebSocket connection management
+        class DatingShowWebSocket {
+            constructor() {
+                this.socket = null;
+                this.reconnectAttempts = 0;
+                this.maxReconnectAttempts = 5;
+                this.reconnectDelay = 1000;
+                this.connectionStatus = document.getElementById('status-indicator');
+                this.alertContainer = document.getElementById('alert-container');
+                this.updateHandlers = {};
+            }
+            
+            connect() {
+                try {
+                    // WebSocket URL (will be configured based on environment)
+                    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                    const wsUrl = `${wsProtocol}//${window.location.host}/ws/dating_show/`;
+                    
+                    this.socket = new WebSocket(wsUrl);
+                    
+                    this.socket.onopen = () => {
+                        console.log('WebSocket connected');
+                        this.reconnectAttempts = 0;
+                        this.updateConnectionStatus(true);
+                    };
+                    
+                    this.socket.onmessage = (event) => {
+                        try {
+                            const data = JSON.parse(event.data);
+                            this.handleMessage(data);
+                        } catch (error) {
+                            console.error('Error parsing WebSocket message:', error);
+                        }
+                    };
+                    
+                    this.socket.onclose = () => {
+                        console.log('WebSocket connection closed');
+                        this.updateConnectionStatus(false);
+                        this.attemptReconnect();
+                    };
+                    
+                    this.socket.onerror = (error) => {
+                        console.error('WebSocket error:', error);
+                        this.updateConnectionStatus(false);
+                    };
+                    
+                } catch (error) {
+                    console.error('Failed to create WebSocket connection:', error);
+                    this.updateConnectionStatus(false);
+                    this.attemptReconnect();
+                }
+            }
+            
+            handleMessage(data) {
+                const { type, payload } = data;
+                
+                // Call registered handlers
+                if (this.updateHandlers[type]) {
+                    this.updateHandlers[type].forEach(handler => handler(payload));
+                }
+                
+                // Default handlers
+                switch (type) {
+                    case 'agent_update':
+                        this.handleAgentUpdate(payload);
+                        break;
+                    case 'governance':
+                        this.handleGovernanceUpdate(payload);
+                        break;
+                    case 'social':
+                        this.handleSocialUpdate(payload);
+                        break;
+                    case 'performance':
+                        this.handlePerformanceUpdate(payload);
+                        break;
+                    case 'system_message':
+                        this.showAlert(payload.message, payload.level || 'info');
+                        break;
+                }
+            }
+            
+            handleAgentUpdate(payload) {
+                // Update agent cards if they exist on the current page
+                const agentCard = document.querySelector(`[data-agent-id="${payload.agent_id}"]`);
+                if (agentCard) {
+                    this.updateAgentCard(agentCard, payload);
+                }
+            }
+            
+            handleGovernanceUpdate(payload) {
+                // Handle governance updates (votes, rules, etc.)
+                if (payload.update_type === 'new_vote') {
+                    this.showAlert('New governance vote available!', 'info');
+                }
+            }
+            
+            handleSocialUpdate(payload) {
+                // Handle social network updates
+                // This would update relationship graphs if visible
+                console.log('Social update:', payload);
+            }
+            
+            handlePerformanceUpdate(payload) {
+                // Update performance metrics displays
+                console.log('Performance update:', payload);
+            }
+            
+            updateAgentCard(card, data) {
+                // Update agent card with new data
+                const nameElement = card.querySelector('.agent-name');
+                const roleElement = card.querySelector('.agent-role');
+                const actionElement = card.querySelector('.current-action');
+                const locationElement = card.querySelector('.current-location');
+                
+                if (nameElement) nameElement.textContent = data.name || '';
+                if (roleElement) roleElement.textContent = data.current_role || '';
+                if (actionElement) actionElement.textContent = data.current_action || '';
+                if (locationElement) {
+                    const location = data.location || {};
+                    locationElement.textContent = `${location.sector || ''} ${location.arena || ''}`.trim();
+                }
+                
+                // Update status badge
+                const statusBadge = card.querySelector('.agent-status');
+                if (statusBadge) {
+                    statusBadge.className = 'badge status-online';
+                    statusBadge.textContent = 'Active';
+                }
+            }
+            
+            updateConnectionStatus(connected) {
+                if (this.connectionStatus) {
+                    this.connectionStatus.className = connected 
+                        ? 'badge connection-connected fs-6'
+                        : 'badge connection-disconnected fs-6';
+                    this.connectionStatus.innerHTML = connected 
+                        ? '<i class="fas fa-wifi"></i> Connected'
+                        : '<i class="fas fa-wifi"></i> Disconnected';
+                }
+            }
+            
+            attemptReconnect() {
+                if (this.reconnectAttempts < this.maxReconnectAttempts) {
+                    this.reconnectAttempts++;
+                    console.log(`Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})...`);
+                    
+                    setTimeout(() => {
+                        this.connect();
+                    }, this.reconnectDelay * this.reconnectAttempts);
+                } else {
+                    this.showAlert('Failed to connect to server. Please refresh the page.', 'danger');
+                }
+            }
+            
+            showAlert(message, level = 'info') {
+                if (!this.alertContainer) return;
+                
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert alert-${level} alert-dismissible fade show`;
+                alertDiv.innerHTML = `
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                
+                this.alertContainer.appendChild(alertDiv);
+                
+                // Auto-dismiss after 5 seconds
+                setTimeout(() => {
+                    if (alertDiv.parentNode) {
+                        alertDiv.remove();
+                    }
+                }, 5000);
+            }
+            
+            registerHandler(type, handler) {
+                if (!this.updateHandlers[type]) {
+                    this.updateHandlers[type] = [];
+                }
+                this.updateHandlers[type].push(handler);
+            }
+            
+            send(data) {
+                if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+                    this.socket.send(JSON.stringify(data));
+                } else {
+                    console.warn('WebSocket not connected, cannot send data');
+                }
+            }
+        }
+        
+        // Global WebSocket instance
+        window.datingShowWS = new DatingShowWebSocket();
+        
+        // Utility functions
+        function showLoading(message = 'Loading...') {
+            document.getElementById('loading-message').textContent = message;
+            const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+            loadingModal.show();
+        }
+        
+        function hideLoading() {
+            const loadingModal = bootstrap.Modal.getInstance(document.getElementById('loadingModal'));
+            if (loadingModal) {
+                loadingModal.hide();
+            }
+        }
+        
+        function formatTimeAgo(timestamp) {
+            const now = new Date();
+            const time = new Date(timestamp);
+            const diffInSeconds = Math.floor((now - time) / 1000);
+            
+            if (diffInSeconds < 60) return 'just now';
+            if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+            if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+            return `${Math.floor(diffInSeconds / 86400)}d ago`;
+        }
+        
+        // Initialize WebSocket connection when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Try to connect to WebSocket (will gracefully fail if not available)
+            try {
+                window.datingShowWS.connect();
+            } catch (error) {
+                console.log('WebSocket not available, running in polling mode');
+            }
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

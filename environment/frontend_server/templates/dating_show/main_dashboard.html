@@ -1,0 +1,669 @@
+{% extends "base_enhanced.html" %}
+{% load static %}
+
+{% block title %}Main Dashboard{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'dating_show/css/agent_cards.css' %}">
+<style>
+    .simulation-controls {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border-radius: 12px;
+        color: white;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stats-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        margin-bottom: 1rem;
+    }
+    
+    .stats-card .stats-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: var(--primary-color);
+    }
+    
+    .stats-card .stats-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .filter-container {
+        background: white;
+        border-radius: 12px;
+        padding: 1rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .agent-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    @media (max-width: 768px) {
+        .agent-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Simulation Control Panel -->
+<div class="simulation-controls">
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <h4 class="mb-0">
+                <i class="fas fa-play-circle"></i> 
+                Simulation Control
+            </h4>
+            <p class="mb-0 mt-2 opacity-75">
+                Current Time: <span id="current-time-display">--:--:--</span> | 
+                Step: <span id="current-step-display">0</span>
+            </p>
+        </div>
+        <div class="col-md-6 text-end">
+            <div class="btn-group" role="group">
+                <button id="play-btn" class="btn btn-light" onclick="controlSimulation('play')">
+                    <i class="fas fa-play"></i> Play
+                </button>
+                <button id="pause-btn" class="btn btn-light" onclick="controlSimulation('pause')">
+                    <i class="fas fa-pause"></i> Pause
+                </button>
+                <button id="stop-btn" class="btn btn-light" onclick="controlSimulation('stop')">
+                    <i class="fas fa-stop"></i> Stop
+                </button>
+                <button id="reset-btn" class="btn btn-light" onclick="controlSimulation('reset')">
+                    <i class="fas fa-redo"></i> Reset
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stats-card">
+            <div class="stats-number" id="total-agents-stat">{{ total_agents|default:"0" }}</div>
+            <div class="stats-label">Total Agents</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stats-card">
+            <div class="stats-number" id="active-agents-stat">{{ total_agents|default:"0" }}</div>
+            <div class="stats-label">Active Agents</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stats-card">
+            <div class="stats-number" id="active-votes-stat">{{ active_votes|default:"0" }}</div>
+            <div class="stats-label">Active Votes</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stats-card">
+            <div class="stats-number" id="violations-stat">{{ recent_violations|default:"0" }}</div>
+            <div class="stats-label">Recent Violations</div>
+        </div>
+    </div>
+</div>
+
+<!-- Filter and Search Controls -->
+<div class="filter-container">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <div class="row g-2">
+                <div class="col-md-3">
+                    <select id="role-filter" class="form-select form-select-sm">
+                        <option value="">All Roles</option>
+                        <option value="contestant">Contestants</option>
+                        <option value="host">Hosts</option>
+                        <option value="producer">Producers</option>
+                        <option value="participant">Participants</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select id="status-filter" class="form-select form-select-sm">
+                        <option value="">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="idle">Idle</option>
+                        <option value="offline">Offline</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <input type="text" id="search-agent" class="form-control form-control-sm" placeholder="Search agents...">
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-outline-secondary btn-sm w-100" onclick="clearFilters()">
+                        <i class="fas fa-times"></i> Clear
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 text-end">
+            <div class="btn-group btn-group-sm" role="group">
+                <button class="btn btn-outline-primary active" onclick="setView('grid')" data-view="grid">
+                    <i class="fas fa-th"></i> Grid
+                </button>
+                <button class="btn btn-outline-primary" onclick="setView('list')" data-view="list">
+                    <i class="fas fa-list"></i> List
+                </button>
+            </div>
+            <button class="btn btn-primary btn-sm ms-2" onclick="refreshAgents()">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Agents Display Area -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="fas fa-users"></i> 
+            Agents (<span id="visible-agent-count">{{ agent_count|default:"0" }}</span>)
+        </h5>
+        <div class="d-flex align-items-center">
+            <span class="badge bg-success me-2" id="live-indicator">
+                <i class="fas fa-circle"></i> Live Updates
+            </span>
+            <button class="btn btn-outline-light btn-sm" onclick="toggleAutoRefresh()">
+                <i class="fas fa-pause" id="auto-refresh-icon"></i>
+                <span id="auto-refresh-text">Auto-refresh: ON</span>
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- Loading State -->
+        <div id="loading-state" class="text-center py-5" style="display: none;">
+            <div class="loading-spinner mb-3"></div>
+            <p class="text-muted">Loading agents...</p>
+        </div>
+        
+        <!-- Agents Grid -->
+        <div class="agent-grid" id="agents-container">
+            <!-- Agent cards will be dynamically populated here -->
+        </div>
+        
+        <!-- Empty State -->
+        <div id="empty-state" class="text-center py-5" style="display: none;">
+            <i class="fas fa-users text-muted" style="font-size: 4rem; opacity: 0.3;"></i>
+            <h4 class="text-muted mt-3">No agents found</h4>
+            <p class="text-muted">Try adjusting your filters or refresh the page</p>
+        </div>
+        
+        <!-- Pagination -->
+        <nav aria-label="Agent pagination" class="mt-4">
+            <ul class="pagination justify-content-center" id="agent-pagination">
+                <!-- Pagination will be dynamically generated -->
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<!-- Agent Card Template -->
+<template id="agent-card-template">
+    <div class="agent-card" data-agent-id="">
+        <div class="card h-100">
+            <div class="card-header p-3">
+                <div class="d-flex align-items-center">
+                    <img class="agent-avatar me-3" src="{% static 'assets/characters/default.png' %}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+                    <div class="flex-grow-1">
+                        <h6 class="mb-1 agent-name fw-bold"></h6>
+                        <small class="text-muted agent-role"></small>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge agent-status mb-1"></span>
+                        <div class="text-muted small agent-last-update">--</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-3">
+                <div class="agent-info">
+                    <div class="mb-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">Current Action:</small>
+                            <span class="badge bg-light text-dark current-action-badge"></span>
+                        </div>
+                        <div class="current-action text-truncate fw-medium"></div>
+                    </div>
+                    
+                    <div class="mb-2">
+                        <small class="text-muted">Location:</small>
+                        <div class="current-location text-truncate"></div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <small class="text-muted">Conversation:</small>
+                        <div class="current-conversation text-truncate fst-italic"></div>
+                    </div>
+                    
+                    <!-- Skills Progress -->
+                    <div class="skills-section">
+                        <small class="text-muted">Top Skills:</small>
+                        <div class="skill-bars mt-1">
+                            <!-- Skill progress bars will be dynamically added -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer p-3 bg-light">
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                    <button class="btn btn-outline-primary btn-sm flex-fill view-details">
+                        <i class="fas fa-eye"></i> Details
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm flex-fill view-memory">
+                        <i class="fas fa-brain"></i> Memory
+                    </button>
+                    <button class="btn btn-outline-info btn-sm flex-fill view-relationships">
+                        <i class="fas fa-heart"></i> Social
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Dashboard state management
+let currentPage = 1;
+let pageSize = 20;
+let totalAgents = {{ total_agents|default:"0" }};
+let agents = [];
+let filteredAgents = [];
+let autoRefreshEnabled = true;
+let autoRefreshInterval;
+
+// Initialize dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    initializeDashboard();
+    setupEventListeners();
+    startAutoRefresh();
+});
+
+function initializeDashboard() {
+    // Load initial agent data
+    loadAgents();
+    
+    // Setup WebSocket handlers for real-time updates
+    window.datingShowWS.registerHandler('agent_update', handleAgentUpdate);
+    window.datingShowWS.registerHandler('performance', handlePerformanceUpdate);
+    
+    // Initialize simulation status
+    updateSimulationStatus();
+}
+
+function setupEventListeners() {
+    // Filter event listeners
+    document.getElementById('role-filter').addEventListener('change', applyFilters);
+    document.getElementById('status-filter').addEventListener('change', applyFilters);
+    document.getElementById('search-agent').addEventListener('input', debounce(applyFilters, 300));
+    
+    // View toggle listeners
+    document.querySelectorAll('[data-view]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('[data-view]').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+}
+
+async function loadAgents() {
+    try {
+        showLoadingState();
+        
+        const response = await fetch(`/dating_show/api/agents/?page=${currentPage}&page_size=${pageSize}`);
+        const data = await response.json();
+        
+        agents = data.agents || [];
+        filteredAgents = [...agents];
+        
+        // Update pagination info
+        if (data.pagination) {
+            updatePagination(data.pagination);
+        }
+        
+        renderAgents();
+        hideLoadingState();
+        
+    } catch (error) {
+        console.error('Error loading agents:', error);
+        showEmptyState();
+        hideLoadingState();
+    }
+}
+
+function renderAgents() {
+    const container = document.getElementById('agents-container');
+    const template = document.getElementById('agent-card-template');
+    
+    // Clear existing cards
+    container.innerHTML = '';
+    
+    if (filteredAgents.length === 0) {
+        showEmptyState();
+        return;
+    }
+    
+    hideEmptyState();
+    
+    // Render agent cards
+    filteredAgents.forEach(agent => {
+        const card = createAgentCard(agent, template);
+        container.appendChild(card);
+    });
+    
+    // Update visible count
+    document.getElementById('visible-agent-count').textContent = filteredAgents.length;
+}
+
+function createAgentCard(agent, template) {
+    const cardElement = template.content.cloneNode(true);
+    const card = cardElement.querySelector('.agent-card');
+    
+    // Set agent ID
+    card.setAttribute('data-agent-id', agent.agent_id);
+    
+    // Populate card data
+    card.querySelector('.agent-name').textContent = agent.name || 'Unknown Agent';
+    card.querySelector('.agent-role').textContent = agent.current_role || 'Participant';
+    
+    // Set avatar image
+    const avatar = card.querySelector('.agent-avatar');
+    avatar.src = `/static/assets/characters/${agent.name.replace(' ', '_')}.png`;
+    avatar.onerror = function() {
+        this.src = '/static/assets/characters/default.png';
+    };
+    
+    // Set status
+    const statusBadge = card.querySelector('.agent-status');
+    statusBadge.textContent = 'Active';
+    statusBadge.className = 'badge status-online';
+    
+    // Set current action
+    card.querySelector('.current-action').textContent = agent.current_action || 'Idle';
+    card.querySelector('.current-action-badge').textContent = agent.current_action ? 'Busy' : 'Available';
+    
+    // Set location
+    const location = agent.location || {};
+    const locationText = `${location.sector || ''} ${location.arena || ''}`.trim() || 'Unknown';
+    card.querySelector('.current-location').textContent = locationText;
+    
+    // Set conversation
+    const conversation = agent.social_context?.current_conversation || 'None';
+    card.querySelector('.current-conversation').textContent = conversation;
+    
+    // Render top skills
+    renderSkills(card.querySelector('.skill-bars'), agent.skills || {});
+    
+    // Set last update time
+    card.querySelector('.agent-last-update').textContent = formatTimeAgo(agent.updated_at);
+    
+    // Setup button handlers
+    card.querySelector('.view-details').addEventListener('click', () => viewAgentDetails(agent.agent_id));
+    card.querySelector('.view-memory').addEventListener('click', () => viewAgentMemory(agent.agent_id));
+    card.querySelector('.view-relationships').addEventListener('click', () => viewAgentRelationships(agent.agent_id));
+    
+    return cardElement;
+}
+
+function renderSkills(container, skills) {
+    container.innerHTML = '';
+    
+    // Get top 3 skills
+    const sortedSkills = Object.entries(skills)
+        .map(([name, data]) => ({ name, level: data.level || 0 }))
+        .sort((a, b) => b.level - a.level)
+        .slice(0, 3);
+    
+    if (sortedSkills.length === 0) {
+        container.innerHTML = '<small class="text-muted">No skills developed</small>';
+        return;
+    }
+    
+    sortedSkills.forEach(skill => {
+        const skillElement = document.createElement('div');
+        skillElement.className = 'mb-1';
+        skillElement.innerHTML = `
+            <div class="d-flex justify-content-between">
+                <small>${skill.name}</small>
+                <small>${(skill.level * 100).toFixed(0)}%</small>
+            </div>
+            <div class="progress" style="height: 4px;">
+                <div class="progress-bar bg-info" style="width: ${skill.level * 100}%"></div>
+            </div>
+        `;
+        container.appendChild(skillElement);
+    });
+}
+
+function applyFilters() {
+    const roleFilter = document.getElementById('role-filter').value;
+    const statusFilter = document.getElementById('status-filter').value;
+    const searchTerm = document.getElementById('search-agent').value.toLowerCase();
+    
+    filteredAgents = agents.filter(agent => {
+        // Role filter
+        if (roleFilter && agent.current_role !== roleFilter) return false;
+        
+        // Status filter (would need real status data)
+        // if (statusFilter && agent.status !== statusFilter) return false;
+        
+        // Search filter
+        if (searchTerm) {
+            const searchableText = `${agent.name} ${agent.current_role} ${agent.current_action}`.toLowerCase();
+            if (!searchableText.includes(searchTerm)) return false;
+        }
+        
+        return true;
+    });
+    
+    renderAgents();
+}
+
+function clearFilters() {
+    document.getElementById('role-filter').value = '';
+    document.getElementById('status-filter').value = '';
+    document.getElementById('search-agent').value = '';
+    applyFilters();
+}
+
+async function controlSimulation(action) {
+    try {
+        showLoading(`${action.charAt(0).toUpperCase() + action.slice(1)}ing simulation...`);
+        
+        const response = await fetch('/dating_show/api/simulation/control/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ action })
+        });
+        
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            window.datingShowWS.showAlert(`Simulation ${action} command executed`, 'success');
+            updateSimulationStatus();
+        } else {
+            window.datingShowWS.showAlert(`Failed to ${action} simulation`, 'danger');
+        }
+        
+        hideLoading();
+        
+    } catch (error) {
+        console.error(`Error ${action}ing simulation:`, error);
+        window.datingShowWS.showAlert(`Error ${action}ing simulation`, 'danger');
+        hideLoading();
+    }
+}
+
+async function updateSimulationStatus() {
+    try {
+        const response = await fetch('/dating_show/api/simulation/status/');
+        const status = await response.json();
+        
+        if (status.status !== 'not_found') {
+            document.getElementById('current-step-display').textContent = status.current_step;
+            // Would format and display current_time if available
+        }
+        
+    } catch (error) {
+        console.error('Error updating simulation status:', error);
+    }
+}
+
+function handleAgentUpdate(payload) {
+    // Find and update the agent in our local data
+    const agentIndex = agents.findIndex(agent => agent.agent_id === payload.agent_id);
+    if (agentIndex !== -1) {
+        agents[agentIndex] = { ...agents[agentIndex], ...payload };
+        applyFilters(); // Re-render with updated data
+    }
+}
+
+function handlePerformanceUpdate(payload) {
+    // Update statistics
+    if (payload.active_agents) {
+        document.getElementById('active-agents-stat').textContent = payload.active_agents;
+    }
+}
+
+function viewAgentDetails(agentId) {
+    window.location.href = `/dating_show/agent/${agentId}/`;
+}
+
+function viewAgentMemory(agentId) {
+    // Open memory inspector modal or navigate to memory view
+    console.log(`View memory for agent: ${agentId}`);
+}
+
+function viewAgentRelationships(agentId) {
+    // Open relationships modal or navigate to social view
+    console.log(`View relationships for agent: ${agentId}`);
+}
+
+function setView(viewType) {
+    // Switch between grid and list views
+    const container = document.getElementById('agents-container');
+    if (viewType === 'list') {
+        container.className = 'agent-list';
+    } else {
+        container.className = 'agent-grid';
+    }
+}
+
+function refreshAgents() {
+    loadAgents();
+}
+
+function toggleAutoRefresh() {
+    autoRefreshEnabled = !autoRefreshEnabled;
+    const icon = document.getElementById('auto-refresh-icon');
+    const text = document.getElementById('auto-refresh-text');
+    
+    if (autoRefreshEnabled) {
+        startAutoRefresh();
+        icon.className = 'fas fa-pause';
+        text.textContent = 'Auto-refresh: ON';
+    } else {
+        stopAutoRefresh();
+        icon.className = 'fas fa-play';
+        text.textContent = 'Auto-refresh: OFF';
+    }
+}
+
+function startAutoRefresh() {
+    if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+    if (autoRefreshEnabled) {
+        autoRefreshInterval = setInterval(loadAgents, 5000); // Refresh every 5 seconds
+    }
+}
+
+function stopAutoRefresh() {
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+        autoRefreshInterval = null;
+    }
+}
+
+function showLoadingState() {
+    document.getElementById('loading-state').style.display = 'block';
+    document.getElementById('agents-container').style.display = 'none';
+    hideEmptyState();
+}
+
+function hideLoadingState() {
+    document.getElementById('loading-state').style.display = 'none';
+    document.getElementById('agents-container').style.display = 'grid';
+}
+
+function showEmptyState() {
+    document.getElementById('empty-state').style.display = 'block';
+    document.getElementById('agents-container').style.display = 'none';
+}
+
+function hideEmptyState() {
+    document.getElementById('empty-state').style.display = 'none';
+}
+
+function updatePagination(paginationData) {
+    const container = document.getElementById('agent-pagination');
+    container.innerHTML = '';
+    
+    if (paginationData.total_pages <= 1) return;
+    
+    // Previous button
+    const prevLi = document.createElement('li');
+    prevLi.className = `page-item ${!paginationData.has_previous ? 'disabled' : ''}`;
+    prevLi.innerHTML = `<a class="page-link" href="#" onclick="changePage(${paginationData.current_page - 1})">Previous</a>`;
+    container.appendChild(prevLi);
+    
+    // Page numbers
+    for (let i = 1; i <= paginationData.total_pages; i++) {
+        const li = document.createElement('li');
+        li.className = `page-item ${i === paginationData.current_page ? 'active' : ''}`;
+        li.innerHTML = `<a class="page-link" href="#" onclick="changePage(${i})">${i}</a>`;
+        container.appendChild(li);
+    }
+    
+    // Next button
+    const nextLi = document.createElement('li');
+    nextLi.className = `page-item ${!paginationData.has_next ? 'disabled' : ''}`;
+    nextLi.innerHTML = `<a class="page-link" href="#" onclick="changePage(${paginationData.current_page + 1})">Next</a>`;
+    container.appendChild(nextLi);
+}
+
+function changePage(page) {
+    currentPage = page;
+    loadAgents();
+}
+
+// Utility function for debouncing search
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+</script>
+{% endblock %}

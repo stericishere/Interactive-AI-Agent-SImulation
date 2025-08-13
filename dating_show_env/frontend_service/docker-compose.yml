@@ -1,0 +1,11 @@
+services:
+  dating-show-frontend:
+    build: .
+    ports:
+      - "8001:8001"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8001
+      - DEBUG=true
+      - DATING_SHOW_BACKEND_URL=http://host.docker.internal:8000
+    restart: unless-stopped

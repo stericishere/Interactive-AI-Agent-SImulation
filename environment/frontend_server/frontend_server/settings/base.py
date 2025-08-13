@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'translator',
     'corsheaders',
     'storages',
+    'dating_show_api',
 ]
 
 MIDDLEWARE = [

@@ -1,40 +1,72 @@
 """
 Author: Joon Sung Park (joonspk@stanford.edu)
 
-File: gpt_structure.py
-Description: Wrapper functions for calling OpenAI APIs.
+File: test.py
+Description: Test script for OpenRouter API integration.
 """
 import json
 import random
-import openai
+import requests
 import time 
+import os
 
-from utils import *
-openai.api_key = openai_api_key
+# OpenRouter configuration
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "your-openrouter-api-key-here")
+OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
+MODEL_NAME = "llama-4-maverick"
+
+def openrouter_request(messages, model=MODEL_NAME, temperature=0.7, max_tokens=None):
+  """
+  Make a request to OpenRouter API
+  """
+  headers = {
+    "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+    "Content-Type": "application/json"
+  }
+  
+  data = {
+    "model": model,
+    "messages": messages
+  }
+  
+  if temperature is not None:
+    data["temperature"] = temperature
+  if max_tokens is not None:
+    data["max_tokens"] = max_tokens
+  
+  try:
+    response = requests.post(
+      f"{OPENROUTER_BASE_URL}/chat/completions",
+      headers=headers,
+      json=data
+    )
+    response.raise_for_status()
+    
+    result = response.json()
+    return result["choices"][0]["message"]["content"]
+  
+  except requests.exceptions.RequestException as e:
+    print(f"OpenRouter API Error: {e}")
+    return "OpenRouter API Error"
+  except (KeyError, IndexError) as e:
+    print(f"OpenRouter Response Error: {e}")
+    return "OpenRouter Response Error"
 
 def ChatGPT_request(prompt): 
   """
-  Given a prompt and a dictionary of GPT parameters, make a request to OpenAI
-  server and returns the response. 
+  Given a prompt, make a request to OpenRouter server and returns the response.
   ARGS:
     prompt: a str prompt
-    gpt_parameter: a python dictionary with the keys indicating the names of  
-                   the parameter and the values indicating the parameter 
-                   values.   
   RETURNS: 
-    a str of GPT-3's response. 
+    a str of llama-4-maverick's response. 
   """
-  # temp_sleep()
   try: 
-    completion = openai.ChatCompletion.create(
-    model="gpt-3.5-turbo", 
-    messages=[{"role": "user", "content": prompt}]
-    )
-    return completion["choices"][0]["message"]["content"]
+    messages = [{"role": "user", "content": prompt}]
+    return openrouter_request(messages, MODEL_NAME)
   
   except: 
-    print ("ChatGPT ERROR")
-    return "ChatGPT ERROR"
+    print ("OpenRouter ERROR")
+    return "OpenRouter ERROR"
 
 prompt = """
 ---

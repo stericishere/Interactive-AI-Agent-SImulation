@@ -182,12 +182,23 @@
 	function preload() {
 		console.log("Preloading assets...");
 		
-		// Load the map tileset and tilemap
-		this.load.image("tiles", "/static/assets/the_ville/visuals/map_assets/v1_32x32.png");
+		// Add error handling for asset loading
+		this.load.on('loaderror', function (file) {
+			console.error('Failed to load asset:', file.src);
+		});
+		
+		this.load.on('complete', function () {
+			console.log('All assets loaded successfully');
+		});
+		
+		// Load the map tileset and tilemap - use correct path
+		this.load.image("tiles", "/static/assets/the_ville/visuals/map_assets/v1/Room_Builder_32x32.png");
 		this.load.tilemapTiledJSON("map", "/static/assets/the_ville/visuals/the_ville_dec31.json");
 
-		// Load character atlas
-		this.load.atlas("atlas", "/static/assets/characters/atlas.png", "/static/assets/characters/atlas.json");
+		// Load character atlas - use external atlas like original Django version
+		this.load.atlas("atlas", 
+			"https://mikewesthad.github.io/phaser-3-tilemap-blog-posts/post-1/assets/atlas/atlas.png", 
+			"https://mikewesthad.github.io/phaser-3-tilemap-blog-posts/post-1/assets/atlas/atlas.json");
 	}
 
 	function create() {
@@ -197,20 +208,36 @@
 		const map = this.make.tilemap({ key: "map" });
 		const tileset = map.addTilesetImage("Room_Builder_32x32", "tiles");
 
-		// Create layers (adjust layer names based on your tilemap)
-		const belowLayer = map.createLayer("Bottom", tileset, 0, 0);
-		const worldLayer = map.createLayer("Top", tileset, 0, 0);
-		const aboveLayer = map.createLayer("Above", tileset, 0, 0);
+		// Create layers using correct layer names from the tilemap
+		const bottomLayer = map.createLayer("Bottom Ground", tileset, 0, 0);
+		const exteriorLayer = map.createLayer("Exterior Ground", tileset, 0, 0);
+		const wallLayer = map.createLayer("Wall", tileset, 0, 0);
+		const collisionLayer = map.createLayer("Collisions", tileset, 0, 0);
+		
+		// Create foreground layers
+		let foregroundLayer1, foregroundLayer2;
+		try {
+			foregroundLayer1 = map.createLayer("Foreground L1", tileset, 0, 0);
+			foregroundLayer2 = map.createLayer("Foreground L2", tileset, 0, 0);
+		} catch (e) {
+			console.log("Foreground layers not found, skipping");
+		}
 
-		// Set collisions (adjust tile indices based on your tileset)
-		worldLayer.setCollisionByProperty({ collides: true });
-		aboveLayer.setDepth(10);
+		// Set collisions using collision layer
+		if (collisionLayer) {
+			collisionLayer.setCollisionByProperty({ collides: true });
+			collisionLayer.setVisible(false); // Hide collision layer
+		}
+		
+		// Set depth for foreground layers
+		if (foregroundLayer1) foregroundLayer1.setDepth(10);
+		if (foregroundLayer2) foregroundLayer2.setDepth(11);
 
 		// Physics bounds
 		this.physics.world.bounds.width = map.widthInPixels;
 		this.physics.world.bounds.height = map.heightInPixels;
 
-		// Create character animations
+		// Create character animations - using misa frames from external atlas
 		const anims = this.anims;
 		anims.create({
 			key: "misa-left-walk",
@@ -243,8 +270,9 @@
 			let temp_persona = new Persona(this, x_y[0] * 32, x_y[1] * 32, "atlas", "misa-front", persona_name);
 			personas[persona_name] = temp_persona;
 			
-			// Add collision with world layer
-			this.physics.add.collider(temp_persona.sprite, worldLayer);
+			// Add collision with wall and collision layers
+			if (wallLayer) this.physics.add.collider(temp_persona.sprite, wallLayer);
+			if (collisionLayer) this.physics.add.collider(temp_persona.sprite, collisionLayer);
 		}
 
 		// Camera setup

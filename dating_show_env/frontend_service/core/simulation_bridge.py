@@ -101,7 +101,16 @@ class SimulationBridge:
             if curr_step_file.exists():
                 async with aiofiles.open(curr_step_file, 'r') as f:
                     data = json.loads(await f.read())
-                    return data.get("step", 0)
+                    step = data.get("step", 0)
+                
+                # Delete the file after reading (Django behavior)
+                try:
+                    curr_step_file.unlink()
+                    logger.info(f"Deleted curr_step.json after reading step {step}")
+                except Exception as e:
+                    logger.warning(f"Could not delete curr_step.json: {e}")
+                
+                return step
         except Exception as e:
             logger.error(f"Error reading current step: {e}")
         return 0
@@ -118,28 +127,32 @@ class SimulationBridge:
         return {}
     
     async def _load_agent_states(self, sim_code: str, step: int) -> List[AgentState]:
-        """Load agent states from storage"""
+        """Load agent states from storage - matches Django find_filenames logic"""
         agents = []
         try:
             personas_path = self.storage_path / sim_code / "personas"
             if personas_path.exists():
+                # Use Django-compatible directory listing (matches find_filenames)
                 for persona_dir in personas_path.iterdir():
-                    if persona_dir.is_dir() and not persona_dir.name.startswith('.'):
-                        agent = await self._load_single_agent(persona_dir, step)
+                    if (persona_dir.is_dir() and 
+                        not persona_dir.name.startswith('.') and
+                        persona_dir.name.strip() != ""):
+                        agent = await self._load_single_agent(persona_dir, step, sim_code)
                         if agent:
                             agents.append(agent)
+                logger.info(f"Loaded {len(agents)} agents from {personas_path}")
         except Exception as e:
             logger.error(f"Error loading agent states: {e}")
         
         return agents
     
-    async def _load_single_agent(self, persona_dir: Path, step: int) -> Optional[AgentState]:
+    async def _load_single_agent(self, persona_dir: Path, step: int, sim_code: str) -> Optional[AgentState]:
         """Load single agent state"""
         try:
             agent_name = persona_dir.name
             
             # Load agent position from environment data
-            position = await self._load_agent_position(agent_name, step)
+            position = await self._load_agent_position(agent_name, step, sim_code)
             
             # Load agent scratch data if available
             scratch_file = persona_dir / "bootstrap_memory" / "scratch.json"
@@ -168,12 +181,9 @@ class SimulationBridge:
             logger.error(f"Error loading agent {persona_dir.name}: {e}")
             return None
     
-    async def _load_agent_position(self, agent_name: str, step: int) -> Optional[Position]:
+    async def _load_agent_position(self, agent_name: str, step: int, sim_code: str) -> Optional[Position]:
         """Load agent position from environment data"""
         try:
-            sim_code = await self._get_current_sim_code()
-            if not sim_code:
-                return None
             
             env_dir = self.storage_path / sim_code / "environment"
             if not env_dir.exists():

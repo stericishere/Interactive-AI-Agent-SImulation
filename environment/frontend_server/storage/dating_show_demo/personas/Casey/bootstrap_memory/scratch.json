@@ -1,0 +1,8 @@
+{
+  "action": {
+    "description": "exploring the villa and observing dynamics",
+    "duration": 10
+  },
+  "curr_tile": ["Hobbs Cafe"],
+  "daily_plan_req": "Understanding the social dynamics and finding potential matches"
+}

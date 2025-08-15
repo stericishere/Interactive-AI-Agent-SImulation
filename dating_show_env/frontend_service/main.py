@@ -393,6 +393,72 @@ async def get_simulation_status():
         logger.error(f"Error getting simulation status: {e}")
         return {"status": "error", "active": False, "error": str(e)}
 
+@app.post("/dating_show/api/broadcast/update/")
+async def broadcast_update(request: Request):
+    """Receive broadcast updates from the dating show backend"""
+    try:
+        update_data = await request.json()
+        
+        logger.info(f"Received broadcast update: {update_data.get('type', 'unknown')} - {update_data.get('message', 'no message')}")
+        
+        # Broadcast to all connected WebSocket clients
+        message = {
+            "type": "broadcast_update",
+            "data": update_data,
+            "timestamp": datetime.now().isoformat()
+        }
+        
+        await websocket_manager.broadcast(json.dumps(message))
+        
+        return {"status": "received", "broadcast_type": update_data.get('type', 'unknown')}
+        
+    except Exception as e:
+        logger.error(f"Error handling broadcast update: {e}")
+        raise HTTPException(status_code=500, detail="Failed to handle broadcast update")
+
+@app.post("/dating_show/api/broadcast/agent_update/")
+async def broadcast_agent_update(request: Request):
+    """Receive agent-specific broadcast updates"""
+    try:
+        agent_update = await request.json()
+        
+        agent_id = agent_update.get('agent_id', 'unknown')
+        logger.info(f"Received agent broadcast update for {agent_id}")
+        
+        # Broadcast agent-specific update
+        await websocket_manager.broadcast_agent_update(agent_id, agent_update)
+        
+        return {"status": "received", "agent_id": agent_id}
+        
+    except Exception as e:
+        logger.error(f"Error handling agent broadcast update: {e}")
+        raise HTTPException(status_code=500, detail="Failed to handle agent broadcast update")
+
+@app.post("/dating_show/api/broadcast/simulation_event/")
+async def broadcast_simulation_event(request: Request):
+    """Receive simulation event broadcasts"""
+    try:
+        event_data = await request.json()
+        
+        event_type = event_data.get('event_type', 'unknown')
+        logger.info(f"Received simulation event broadcast: {event_type}")
+        
+        # Broadcast simulation event
+        message = {
+            "type": "simulation_event",
+            "event_type": event_type,
+            "data": event_data,
+            "timestamp": datetime.now().isoformat()
+        }
+        
+        await websocket_manager.broadcast(json.dumps(message))
+        
+        return {"status": "received", "event_type": event_type}
+        
+    except Exception as e:
+        logger.error(f"Error handling simulation event broadcast: {e}")
+        raise HTTPException(status_code=500, detail="Failed to handle simulation event broadcast")
+
 @app.on_event("startup")
 async def startup_event():
     """Initialize service on startup"""

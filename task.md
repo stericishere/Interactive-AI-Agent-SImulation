@@ -1,3 +1,11 @@
+   3. File-Based Coupling:
+       * Issue: The file-based communication creates a tight coupling between the frontend and backend and makes the system dependent on a shared filesystem.
+         This is not a scalable or robust architecture.
+       * Recommendation: I strongly recommend refactoring the communication to be purely API-based. The backend should expose all necessary simulation data
+         through a comprehensive set of API endpoints, and the frontend should rely exclusively on these endpoints for data. This will create a more standard,
+         scalable, and maintainable client-server architecture.
+
+
 # Phase 1: Core State Management Enhancement - Task Breakdown
 
 ## 🎯 **CURRENT PROJECT STATUS - UPDATED**

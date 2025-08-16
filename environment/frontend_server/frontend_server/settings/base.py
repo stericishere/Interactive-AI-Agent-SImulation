@@ -41,7 +41,10 @@ INSTALLED_APPS = [
     'corsheaders',
     'storages',
     'dating_show_api',
+    'channels',
 ]
+
+ASGI_APPLICATION = 'frontend_server.routing.application'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

@@ -1,3 +1,4 @@
+
 """
 Database Service for Dating Show Integration
 Enterprise database management for seamless Django integration with health monitoring and migration management
@@ -5,6 +6,7 @@ Enterprise database management for seamless Django integration with health monit
 
 import os
 import sys
+from pathlib import Path
 import asyncio
 import logging
 import subprocess
@@ -17,6 +19,7 @@ from django.core.management import execute_from_command_line
 from django.db import connection, IntegrityError
 from django.conf import settings
 from asgiref.sync import sync_to_async
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -120,7 +123,7 @@ class DatabaseService:
                 logger.info(f"Added to Python path: {frontend_server_path}")
             
             # Configure Django settings
-            os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'frontend_server.settings.base')
+            os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'environment.frontend_server.frontend_server.settings')
             
             # Initialize Django
             if not hasattr(django.conf.settings, 'configured') or not django.conf.settings.configured:
@@ -394,11 +397,14 @@ class DatabaseService:
     async def _run_django_command(self, command: List[str], timeout: int = 60) -> Dict[str, Any]:
         """Run Django management command"""
         try:
-            full_command = [sys.executable, 'manage.py'] + command
+            project_root = Path(self.actual_frontend_path).parent.parent
+            manage_py_path = Path(self.actual_frontend_path) / 'manage.py'
+
+            full_command = [sys.executable, str(manage_py_path)] + command
             
             process = await asyncio.create_subprocess_exec(
                 *full_command,
-                cwd=self.actual_frontend_path or self.config.frontend_server_path,
+                cwd=str(project_root),
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE
             )

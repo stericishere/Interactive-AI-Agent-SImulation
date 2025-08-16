@@ -18,6 +18,14 @@ import shutil, errno
 
 from os import listdir
 
+# Frontend server storage path - needed for reverie simulation
+fs_storage = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 
+                         "environment", "frontend_server", "storage")
+
+# Environment matrix path - needed for maze information
+env_matrix = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                         "environment", "frontend_server", "static_dirs", "assets", "the_ville", "matrix")
+
 def create_folder_if_not_there(curr_path): 
   """
   Checks if a folder in the curr_path exists. If it does not exist, creates

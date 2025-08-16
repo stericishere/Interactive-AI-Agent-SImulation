@@ -40,7 +40,7 @@ class OrchestrationConfig:
     frontend_server_path: str = "./environment/frontend_server"
     
     # Bridge configuration
-    frontend_url: str = "http://localhost:8000"
+    frontend_url: str = "http://localhost:8001"
     bridge_update_interval: float = 1.0
     bridge_batch_size: int = 10
     

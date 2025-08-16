@@ -12,6 +12,8 @@ from django.views.decorators.http import require_http_methods
 from django.core.paginator import Paginator
 from django.db.models import Q, Count, Avg
 from django.utils import timezone
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 from .models import (
     Agent, AgentSkill, SocialRelationship, GovernanceVote, VoteCast,
@@ -249,6 +251,23 @@ def api_agent_state_update(request, agent_id):
                     content=memory_content,
                     importance_score=memory_content.get('importance', 0.0)
                 )
+
+        # Broadcast the update to the frontend
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f'agent_{agent_id}',
+            {
+                'type': 'agent_state_update',
+                'message': {
+                    'agent_id': agent.agent_id,
+                    'name': agent.name,
+                    'current_role': agent.current_role,
+                    'specialization': agent.specialization,
+                    'skills': data.get('skills', {}),
+                    'memory': data.get('memory', {}),
+                }
+            }
+        )
         
         return JsonResponse({'status': 'success', 'message': 'Agent state updated'})
         

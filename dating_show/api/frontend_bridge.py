@@ -59,7 +59,7 @@ class FrontendBridge:
     Handles bidirectional communication and real-time updates
     """
     
-    def __init__(self, frontend_url: str = "http://localhost:8000", 
+    def __init__(self, frontend_url: str = "http://localhost:8001", 
                  update_interval: float = 1.0):
         self.frontend_url = frontend_url
         self.update_interval = update_interval
@@ -378,7 +378,7 @@ def get_bridge() -> FrontendBridge:
     return _bridge_instance
 
 
-def initialize_bridge(frontend_url: str = "http://localhost:8000", 
+def initialize_bridge(frontend_url: str = "http://localhost:8001", 
                      update_interval: float = 1.0) -> FrontendBridge:
     """Initialize the bridge with custom configuration"""
     global _bridge_instance

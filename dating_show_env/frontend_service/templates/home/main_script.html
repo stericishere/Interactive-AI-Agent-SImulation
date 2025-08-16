@@ -77,6 +77,28 @@
 	let pre_anims_direction;
 	let pre_anims_direction_dict = {};
 
+	let curr_maze = "the_ville";
+
+	// <tile_width> is the width of one individual tile (tiles are square)
+	let tile_width = 32;
+	// Important: tile_width % movement_speed has to be 0. 
+	// <movement_speed> determines how fast we move at each upate cylce. 
+	let movement_speed = 32; 
+
+	// <timer_max> determines how frequently our update function will query the 
+	// frontend server. If it's higher, we wait longer cycles. 
+	let timer_max = 0;
+	let timer = timer_max;
+
+	// <phase> -- there are three phases: "process," "update," and "execute."
+	let phase = "update"; // or "update" or "execute"
+
+	// Variables for storing movements that are sent from the backend server.
+	let execute_movement;
+	let execute_count_max = tile_width/movement_speed;
+	let execute_count = execute_count_max;
+	let movement_target = {};
+
 	// ###########################################################################
 	// PERSONA CLASS
 	// ###########################################################################
@@ -179,21 +201,30 @@
 	// PHASER FUNCTIONS
 	// ###########################################################################
 
-	function preload() {
-		console.log("Preloading assets...");
-		
-		// Add error handling for asset loading
-		this.load.on('loaderror', function (file) {
-			console.error('Failed to load asset:', file.src);
-		});
-		
-		this.load.on('complete', function () {
-			console.log('All assets loaded successfully');
-		});
-		
-		// Load the map tileset and tilemap - use correct path
-		this.load.image("tiles", "/static/assets/the_ville/visuals/map_assets/v1/Room_Builder_32x32.png");
-		this.load.tilemapTiledJSON("map", "/static/assets/the_ville/visuals/the_ville_dec31.json");
+	function preload() {  
+		// Loading the necessary images (e.g., the background image, character 
+		// sprites). 
+
+		// Load all required tileset images
+		this.load.image("blocks_1", "/static/assets/the_ville/visuals/map_assets/blocks/blocks_1.png");
+		this.load.image("walls", "/static/assets/the_ville/visuals/map_assets/v1/Room_Builder_32x32.png");
+		this.load.image("interiors_pt1", "/static/assets/the_ville/visuals/map_assets/v1/interiors_pt1.png");
+		this.load.image("interiors_pt2", "/static/assets/the_ville/visuals/map_assets/v1/interiors_pt2.png");
+		this.load.image("interiors_pt3", "/static/assets/the_ville/visuals/map_assets/v1/interiors_pt3.png");
+		this.load.image("interiors_pt4", "/static/assets/the_ville/visuals/map_assets/v1/interiors_pt4.png");
+		this.load.image("interiors_pt5", "/static/assets/the_ville/visuals/map_assets/v1/interiors_pt5.png");
+		this.load.image("CuteRPG_Field_B", "/static/assets/the_ville/visuals/map_assets/cute_rpg_word_VXAce/tilesets/CuteRPG_Field_B.png");
+		this.load.image("CuteRPG_Field_C", "/static/assets/the_ville/visuals/map_assets/cute_rpg_word_VXAce/tilesets/CuteRPG_Field_C.png");
+		this.load.image("CuteRPG_Harbor_C", "/static/assets/the_ville/visuals/map_assets/cute_rpg_word_VXAce/tilesets/CuteRPG_Harbor_C.png");
+		this.load.image("CuteRPG_Village_B", "/static/assets/the_ville/visuals/map_assets/cute_rpg_word_VXAce/tilesets/CuteRPG_Village_B.png");
+		this.load.image("CuteRPG_Forest_B", "/static/assets/the_ville/visuals/map_assets/cute_rpg_word_VXAce/tilesets/CuteRPG_Forest_B.png");
+		this.load.image("CuteRPG_Desert_C", "/static/assets/the_ville/visuals/map_assets/cute_rpg_word_VXAce/tilesets/CuteRPG_Desert_C.png");
+		this.load.image("CuteRPG_Mountains_B", "/static/assets/the_ville/visuals/map_assets/cute_rpg_word_VXAce/tilesets/CuteRPG_Mountains_B.png");
+		this.load.image("CuteRPG_Desert_B", "/static/assets/the_ville/visuals/map_assets/cute_rpg_word_VXAce/tilesets/CuteRPG_Desert_B.png");
+		this.load.image("CuteRPG_Forest_C", "/static/assets/the_ville/visuals/map_assets/cute_rpg_word_VXAce/tilesets/CuteRPG_Forest_C.png");
+
+		// Load the full tilemap JSON (using the same one as original Django)
+		this.load.tilemapTiledJSON("map", "/static/assets/the_ville/visuals/the_ville_jan7.json");
 
 		// Load character atlas - use external atlas like original Django version
 		this.load.atlas("atlas", 
@@ -201,91 +232,118 @@
 			"https://mikewesthad.github.io/phaser-3-tilemap-blog-posts/post-1/assets/atlas/atlas.json");
 	}
 
-	function create() {
-		console.log("Creating scene...");
-
-		// Create tilemap
+	function create() {  
 		const map = this.make.tilemap({ key: "map" });
-		const tileset = map.addTilesetImage("Room_Builder_32x32", "tiles");
 
-		// Create layers using correct layer names from the tilemap
-		const bottomLayer = map.createLayer("Bottom Ground", tileset, 0, 0);
-		const exteriorLayer = map.createLayer("Exterior Ground", tileset, 0, 0);
-		const wallLayer = map.createLayer("Wall", tileset, 0, 0);
-		const collisionLayer = map.createLayer("Collisions", tileset, 0, 0);
+		// Add all tilesets with their corresponding images
+		const collisions = map.addTilesetImage("blocks", "blocks_1");
+		const walls = map.addTilesetImage("Room_Builder_32x32", "walls");
+		const interiors_pt1 = map.addTilesetImage("interiors_pt1", "interiors_pt1");
+		const interiors_pt2 = map.addTilesetImage("interiors_pt2", "interiors_pt2");
+		const interiors_pt3 = map.addTilesetImage("interiors_pt3", "interiors_pt3");
+		const interiors_pt4 = map.addTilesetImage("interiors_pt4", "interiors_pt4");
+		const interiors_pt5 = map.addTilesetImage("interiors_pt5", "interiors_pt5");
+		const CuteRPG_Field_B = map.addTilesetImage("CuteRPG_Field_B", "CuteRPG_Field_B");
+		const CuteRPG_Field_C = map.addTilesetImage("CuteRPG_Field_C", "CuteRPG_Field_C");
+		const CuteRPG_Harbor_C = map.addTilesetImage("CuteRPG_Harbor_C", "CuteRPG_Harbor_C");
+		const CuteRPG_Village_B = map.addTilesetImage("CuteRPG_Village_B", "CuteRPG_Village_B");
+		const CuteRPG_Forest_B = map.addTilesetImage("CuteRPG_Forest_B", "CuteRPG_Forest_B");
+		const CuteRPG_Desert_C = map.addTilesetImage("CuteRPG_Desert_C", "CuteRPG_Desert_C");
+		const CuteRPG_Mountains_B = map.addTilesetImage("CuteRPG_Mountains_B", "CuteRPG_Mountains_B");
+		const CuteRPG_Desert_B = map.addTilesetImage("CuteRPG_Desert_B", "CuteRPG_Desert_B");
+		const CuteRPG_Forest_C = map.addTilesetImage("CuteRPG_Forest_C", "CuteRPG_Forest_C");
+
+		// Create tileset groups like original Django version
+		let tileset_group_1 = [CuteRPG_Field_B, CuteRPG_Field_C, CuteRPG_Harbor_C, CuteRPG_Village_B, 
+			CuteRPG_Forest_B, CuteRPG_Desert_C, CuteRPG_Mountains_B, CuteRPG_Desert_B, CuteRPG_Forest_C,
+			interiors_pt1, interiors_pt2, interiors_pt3, interiors_pt4, interiors_pt5, walls];
+
+		// Create all layers using the proper tileset groups
+		const bottomGroundLayer = map.createLayer("Bottom Ground", tileset_group_1, 0, 0);
+		const exteriorGroundLayer = map.createLayer("Exterior Ground", tileset_group_1, 0, 0);
+		const exteriorDecorationL1Layer = map.createLayer("Exterior Decoration L1", tileset_group_1, 0, 0);
+		const exteriorDecorationL2Layer = map.createLayer("Exterior Decoration L2", tileset_group_1, 0, 0);
+		const interiorGroundLayer = map.createLayer("Interior Ground", tileset_group_1, 0, 0);
+		const wallLayer = map.createLayer("Wall", [CuteRPG_Field_C, walls], 0, 0);
+		const interiorFurnitureL1Layer = map.createLayer("Interior Furniture L1", tileset_group_1, 0, 0);
+		const interiorFurnitureL2Layer = map.createLayer("Interior Furniture L2 ", tileset_group_1, 0, 0);
+		const foregroundL1Layer = map.createLayer("Foreground L1", tileset_group_1, 0, 0);
+		const foregroundL2Layer = map.createLayer("Foreground L2", tileset_group_1, 0, 0);
 		
-		// Create foreground layers
-		let foregroundLayer1, foregroundLayer2;
-		try {
-			foregroundLayer1 = map.createLayer("Foreground L1", tileset, 0, 0);
-			foregroundLayer2 = map.createLayer("Foreground L2", tileset, 0, 0);
-		} catch (e) {
-			console.log("Foreground layers not found, skipping");
+		// Set proper depths for foreground layers
+		foregroundL1Layer.setDepth(2);
+		foregroundL2Layer.setDepth(2);
+
+		// Create collision layer
+		const collisionsLayer = map.createLayer("Collisions", collisions, 0, 0);
+		
+		// Set collision properties
+		collisionsLayer.setCollisionByProperty({ collide: true });
+		collisionsLayer.setDepth(-1);
+
+		// *** SET UP CAMERA *** 
+		// Create a player sprite for camera following (invisible)
+		player = this.physics.add.
+			sprite(800, 288, "atlas", "misa-front").
+			setSize(30, 40).
+			setOffset(0, 0);
+		player.setDepth(-1);
+		// Setting up the camera. 
+		const camera = this.cameras.main;
+		camera.startFollow(player);
+		camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+		cursors = this.input.keyboard.createCursorKeys();
+
+		// *** SET UP PERSONAS *** 
+		// We start by creating the game sprite objects. 
+		for (let i=0; i<Object.keys(spawn_tile_loc).length; i++) { 
+			let persona_name = Object.keys(spawn_tile_loc)[i];
+			let start_pos = [spawn_tile_loc[persona_name][0] * tile_width + tile_width / 2, 
+				spawn_tile_loc[persona_name][1] * tile_width + tile_width];
+			let new_sprite = this.physics.add
+				.sprite(start_pos[0], start_pos[1], "atlas", "misa-front")
+				.setSize(30, 40)
+				.setOffset(0, 32);
+			// Here, we are creating the persona and its pronunciatio sprites.
+			personas[persona_name] = new_sprite;
+			pronunciatios[persona_name] = this.add.text(
+				new_sprite.body.x - 6, 
+				new_sprite.body.y - 42 - 32,
+				"🦁", {
+				font: "28px monospace", 
+				fill: "#000000", 
+				padding: { x: 8, y: 8}, 
+				backgroundColor: "#ffffff",
+				border:"solid",
+				borderRadius:"10px"}).setDepth(3);
 		}
 
-		// Set collisions using collision layer
-		if (collisionLayer) {
-			collisionLayer.setCollisionByProperty({ collides: true });
-			collisionLayer.setVisible(false); // Hide collision layer
-		}
-		
-		// Set depth for foreground layers
-		if (foregroundLayer1) foregroundLayer1.setDepth(10);
-		if (foregroundLayer2) foregroundLayer2.setDepth(11);
-
-		// Physics bounds
-		this.physics.world.bounds.width = map.widthInPixels;
-		this.physics.world.bounds.height = map.heightInPixels;
-
-		// Create character animations - using misa frames from external atlas
+		// Create the player's walking animations from the texture atlas. These are
+		// stored in the global animation manager so any sprite can access them.
 		const anims = this.anims;
 		anims.create({
 			key: "misa-left-walk",
 			frames: anims.generateFrameNames("atlas", { prefix: "misa-left-walk.", start: 0, end: 3, zeroPad: 3 }),
-			frameRate: 10,
-			repeat: -1
-		});
+			frameRate: 4,
+			repeat: -1 });
+
 		anims.create({
 			key: "misa-right-walk",
 			frames: anims.generateFrameNames("atlas", { prefix: "misa-right-walk.", start: 0, end: 3, zeroPad: 3 }),
-			frameRate: 10,
-			repeat: -1
-		});
+			frameRate: 4,
+			repeat: -1 });
+
 		anims.create({
 			key: "misa-front-walk",
 			frames: anims.generateFrameNames("atlas", { prefix: "misa-front-walk.", start: 0, end: 3, zeroPad: 3 }),
-			frameRate: 10,
-			repeat: -1
-		});
+			frameRate: 4,
+			repeat: -1 });
+
 		anims.create({
 			key: "misa-back-walk",
 			frames: anims.generateFrameNames("atlas", { prefix: "misa-back-walk.", start: 0, end: 3, zeroPad: 3 }),
-			frameRate: 10,
-			repeat: -1
-		});
-
-		// Create persona sprites
-		for (var persona_name in spawn_tile_loc) {
-			let x_y = spawn_tile_loc[persona_name];
-			let temp_persona = new Persona(this, x_y[0] * 32, x_y[1] * 32, "atlas", "misa-front", persona_name);
-			personas[persona_name] = temp_persona;
-			
-			// Add collision with wall and collision layers
-			if (wallLayer) this.physics.add.collider(temp_persona.sprite, wallLayer);
-			if (collisionLayer) this.physics.add.collider(temp_persona.sprite, collisionLayer);
-		}
-
-		// Camera setup
-		this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-		this.cameras.main.setZoom(0.8);
-		
-		// Focus on the center of the map initially
-		this.cameras.main.centerOn(map.widthInPixels / 2, map.heightInPixels / 2);
-
-		cursors = this.input.keyboard.createCursorKeys();
-
-		console.log("Scene created successfully");
-		console.log("Personas created:", Object.keys(personas));
+			frameRate: 4,
+			repeat: -1 });
 	}
 
 	function update(time, delta) {

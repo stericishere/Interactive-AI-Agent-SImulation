@@ -40,8 +40,8 @@ simulation_bridge = SimulationBridge()
 
 # Use our Jinja2-compatible templates
 templates = Jinja2Templates(directory="templates")
-# Mount original Django static files
-app.mount("/static", StaticFiles(directory="../../environment/frontend_server/static_dirs"), name="static")
+# Mount static files from local static_dirs
+app.mount("/static", StaticFiles(directory="static_dirs"), name="static")
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -458,6 +458,41 @@ async def broadcast_simulation_event(request: Request):
     except Exception as e:
         logger.error(f"Error handling simulation event broadcast: {e}")
         raise HTTPException(status_code=500, detail="Failed to handle simulation event broadcast")
+
+@app.post("/dating_show/api/batch/update/")
+async def batch_update(request: Request):
+    """Receive batch updates from the dating show backend"""
+    try:
+        batch_data = await request.json()
+        
+        logger.info(f"Received batch update: {batch_data.get('batch_id', 'unknown')}")
+        
+        # Process and broadcast agent updates
+        for agent_update in batch_data.get('agent_updates', []):
+            agent_id = agent_update.get('agent_id', 'unknown')
+            await websocket_manager.broadcast_agent_update(agent_id, agent_update)
+            
+        # Process and broadcast governance updates
+        for governance_update in batch_data.get('governance_updates', []):
+            await websocket_manager.broadcast(json.dumps({
+                "type": "governance_update",
+                "data": governance_update,
+                "timestamp": datetime.now().isoformat()
+            }))
+            
+        # Process and broadcast social updates
+        for social_update in batch_data.get('social_updates', []):
+            await websocket_manager.broadcast(json.dumps({
+                "type": "social_update",
+                "data": social_update,
+                "timestamp": datetime.now().isoformat()
+            }))
+        
+        return {"status": "received", "batch_id": batch_data.get('batch_id', 'unknown')}
+        
+    except Exception as e:
+        logger.error(f"Error handling batch update: {e}")
+        raise HTTPException(status_code=500, detail="Failed to handle batch update")
 
 @app.on_event("startup")
 async def startup_event():

@@ -26,6 +26,9 @@ fs_storage = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file
 env_matrix = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                          "environment", "frontend_server", "static_dirs", "assets", "the_ville", "matrix")
 
+# Temporary storage path - needed for simulation state management
+fs_temp_storage = os.path.join(os.path.dirname(fs_storage), "temp_storage")
+
 def create_folder_if_not_there(curr_path): 
   """
   Checks if a folder in the curr_path exists. If it does not exist, creates

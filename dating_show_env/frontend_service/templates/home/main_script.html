@@ -40,6 +40,7 @@
 
 	// Phaser 3.0 global settings. 
 	// Configuration meant to be passed to the main Phaser game instance. 
+	// Using larger viewport with zoom controls to view full town
 	const config = {
 	  type: Phaser.AUTO,
 	  width: 1500,
@@ -55,9 +56,30 @@
 	    create: create,
 	    update: update } };
 
+	// Zoom control variables
+	let currentZoom = 0.5;
+	const minZoom = 0.2;
+	const maxZoom = 2.0;
+	const zoomStep = 0.1;
+
+	// Camera and agent variables (global scope for Phaser functions)
+	let followingAgent = null;
+	let freeCameraSpeed = 300;
+	let wasdKeys;
+
+	// Function to update zoom level display (global scope)
+	function updateZoomDisplay() {
+		const zoomElement = document.getElementById('zoom-level');
+		if (zoomElement) {
+			zoomElement.textContent = `${currentZoom.toFixed(1)}x`;
+		}
+	}
+
 	// Creating the game instance and setting up the main Phaser variables that  
 	// will be used in it. 
+	console.log("Phaser: Creating game instance...");
 	const game = new Phaser.Game(config);
+	console.log("Phaser: Game instance created");
 	let cursors;
 	let player;
 	let showDebug = false;
@@ -202,6 +224,7 @@
 	// ###########################################################################
 
 	function preload() {  
+		console.log("Phaser: Starting preload...");
 		// Loading the necessary images (e.g., the background image, character 
 		// sprites). 
 
@@ -233,6 +256,7 @@
 	}
 
 	function create() {  
+		console.log("Phaser: Starting create...");
 		const map = this.make.tilemap({ key: "map" });
 
 		// Add all tilesets with their corresponding images
@@ -282,17 +306,80 @@
 		collisionsLayer.setDepth(-1);
 
 		// *** SET UP CAMERA *** 
-		// Create a player sprite for camera following (invisible)
-		player = this.physics.add.
-			sprite(800, 288, "atlas", "misa-front").
-			setSize(30, 40).
-			setOffset(0, 0);
-		player.setDepth(-1);
-		// Setting up the camera. 
+		// Setting up free camera system with agent following capability
 		const camera = this.cameras.main;
-		camera.startFollow(player);
 		camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+		
+		// Camera variables are now global
+		
+		// Set initial camera position and zoom
+		camera.setScroll(2240 - 750, 1600 - 400); // Center on map
+		camera.setZoom(currentZoom);
+		
+		// Set up keyboard controls
 		cursors = this.input.keyboard.createCursorKeys();
+		
+		// Add WASD controls for free camera movement
+		wasdKeys = this.input.keyboard.addKeys('W,S,A,D');
+		
+		// Add escape key to stop following any agent
+		const escapeKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+		
+		// Add zoom controls (+ and - keys, as well as = and - for convenience)
+		const plusKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.PLUS);
+		const minusKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.MINUS);
+		const equalsKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.EQUALS); // For + without shift
+		
+		// Zoom in controls
+		plusKey.on('down', () => {
+			currentZoom = Math.min(currentZoom + zoomStep, maxZoom);
+			camera.setZoom(currentZoom);
+			updateZoomDisplay();
+			console.log(`Zoom: ${currentZoom.toFixed(1)}x`);
+		});
+		
+		equalsKey.on('down', () => {
+			currentZoom = Math.min(currentZoom + zoomStep, maxZoom);
+			camera.setZoom(currentZoom);
+			updateZoomDisplay();
+			console.log(`Zoom: ${currentZoom.toFixed(1)}x`);
+		});
+		
+		// Zoom out control
+		minusKey.on('down', () => {
+			currentZoom = Math.max(currentZoom - zoomStep, minZoom);
+			camera.setZoom(currentZoom);
+			updateZoomDisplay();
+			console.log(`Zoom: ${currentZoom.toFixed(1)}x`);
+		});
+		
+		// Escape key to stop following any agent
+		escapeKey.on('down', () => {
+			if (followingAgent) {
+				followingAgent = null;
+				currentlyFollowing = null;
+				updateFollowingDisplay();
+				console.log("Camera: Stopped following agent. Free camera mode.");
+			}
+		});
+		
+		// Function to start following a specific agent
+		window.followAgent = function(agentName) {
+			if (personas[agentName]) {
+				followingAgent = agentName;
+				console.log(`Camera: Now following ${agentName}. Press ESC to stop following.`);
+			}
+		};
+		
+		// Make variables accessible globally for debugging
+		window.debugPhaser = {
+			camera: camera,
+			personas: personas,
+			followingAgent: () => followingAgent
+		};
+		
+		// Update initial zoom display
+		updateZoomDisplay();
 
 		// *** SET UP PERSONAS *** 
 		// We start by creating the game sprite objects. 
@@ -300,22 +387,31 @@
 			let persona_name = Object.keys(spawn_tile_loc)[i];
 			let start_pos = [spawn_tile_loc[persona_name][0] * tile_width + tile_width / 2, 
 				spawn_tile_loc[persona_name][1] * tile_width + tile_width];
-			let new_sprite = this.physics.add
-				.sprite(start_pos[0], start_pos[1], "atlas", "misa-front")
-				.setSize(30, 40)
-				.setOffset(0, 32);
-			// Here, we are creating the persona and its pronunciatio sprites.
-			personas[persona_name] = new_sprite;
+			
+			// Create Persona class instance (not just a sprite)
+			personas[persona_name] = new Persona(this, start_pos[0], start_pos[1], "atlas", "misa-front", persona_name);
+			
+			// Get the sprite from the persona for speech bubble positioning
+			let new_sprite = personas[persona_name].sprite;
+			// Create agent initials for speech bubble
+			let rgx = new RegExp(/(\p{L}{1})\p{L}+/, 'gu');
+			let initials = [...persona_name.matchAll(rgx)] || [];
+			initials = (
+				(initials.shift()?.[1] || '') + (initials.pop()?.[1] || '')
+			).toUpperCase();
+
 			pronunciatios[persona_name] = this.add.text(
 				new_sprite.body.x - 6, 
 				new_sprite.body.y - 42 - 32,
-				"🦁", {
-				font: "28px monospace", 
+				initials + ": idle", {
+				font: "24px Arial", 
 				fill: "#000000", 
-				padding: { x: 8, y: 8}, 
+				padding: { x: 15, y: 10}, 
 				backgroundColor: "#ffffff",
 				border:"solid",
-				borderRadius:"10px"}).setDepth(3);
+				borderRadius:"15px",
+				wordWrap: { width: 300, useAdvancedWrap: true }
+			}).setDepth(3);
 		}
 
 		// Create the player's walking animations from the texture atlas. These are
@@ -347,25 +443,46 @@
 	}
 
 	function update(time, delta) {
-		// Update all personas
+		// Update all personas and their speech bubbles
 		for (var persona_name in personas) {
 			personas[persona_name].update();
+			
+			// Update speech bubble position to follow agent
+			if (pronunciatios[persona_name] && personas[persona_name]) {
+				pronunciatios[persona_name].x = personas[persona_name].sprite.body.x - 6;
+				pronunciatios[persona_name].y = personas[persona_name].sprite.body.y - 42 - 32;
+			}
 		}
 
-		// Camera controls with cursor keys
+		// Camera controls
 		const cam = this.cameras.main;
-		const speed = 200;
-
-		if (cursors.left.isDown) {
-			cam.scrollX -= speed * delta / 1000;
-		} else if (cursors.right.isDown) {
-			cam.scrollX += speed * delta / 1000;
-		}
-
-		if (cursors.up.isDown) {
-			cam.scrollY -= speed * delta / 1000;
-		} else if (cursors.down.isDown) {
-			cam.scrollY += speed * delta / 1000;
+		
+		if (followingAgent && personas[followingAgent]) {
+			// Follow specific agent smoothly
+			const targetAgent = personas[followingAgent].sprite;
+			const targetX = targetAgent.body.x - cam.width / 2 / cam.zoom;
+			const targetY = targetAgent.body.y - cam.height / 2 / cam.zoom;
+			
+			// Smooth camera following with lerp
+			const lerpSpeed = 0.05; // Adjust for smoother/faster following
+			cam.scrollX += (targetX - cam.scrollX) * lerpSpeed;
+			cam.scrollY += (targetY - cam.scrollY) * lerpSpeed;
+		} else {
+			// Free camera mode with WASD/Arrow controls
+			const speed = freeCameraSpeed * (1 / currentZoom); // Adjust speed based on zoom level
+			
+			if (wasdKeys.A.isDown || cursors.left.isDown) {
+				cam.scrollX -= speed * delta / 1000;
+			}
+			if (wasdKeys.D.isDown || cursors.right.isDown) {
+				cam.scrollX += speed * delta / 1000;
+			}
+			if (wasdKeys.W.isDown || cursors.up.isDown) {
+				cam.scrollY -= speed * delta / 1000;
+			}
+			if (wasdKeys.S.isDown || cursors.down.isDown) {
+				cam.scrollY += speed * delta / 1000;
+			}
 		}
 	}
 
@@ -421,6 +538,29 @@
 						if (actionElement) actionElement.innerHTML = data[persona_name].pronunciatio || "idle";
 						if (addressElement) addressElement.innerHTML = data[persona_name].scratch?.curr_tile?.[0] || "unknown";
 						if (chatElement) chatElement.innerHTML = data[persona_name].chat || "";
+
+						// Update speech bubbles with richer content
+						if (pronunciatios[persona_name]) {
+							let bubbleText = "";
+							let agentAction = data[persona_name].pronunciatio || "idle";
+							let agentChat = data[persona_name].chat || "";
+							
+							// Create agent initials
+							let rgx = new RegExp(/(\p{L}{1})\p{L}+/, 'gu');
+							let initials = [...persona_name.matchAll(rgx)] || [];
+							initials = (
+								(initials.shift()?.[1] || '') + (initials.pop()?.[1] || '')
+							).toUpperCase();
+
+							// Show chat if available, otherwise show action
+							if (agentChat && agentChat.trim() !== "") {
+								bubbleText = initials + ": " + agentChat;
+							} else {
+								bubbleText = initials + ": " + agentAction;
+							}
+
+							pronunciatios[persona_name].setText(bubbleText);
+						}
 					}
 				}
 
@@ -437,10 +577,25 @@
 		}
 	}
 
+	// Agent following management
+	let currentlyFollowing = null;
+	
+	function updateFollowingDisplay() {
+		const followingText = document.getElementById('following-agent');
+		if (followingText) {
+			followingText.textContent = currentlyFollowing ? currentlyFollowing : "Free Camera";
+		}
+	}
+
 	// Button event listeners
 	document.addEventListener('DOMContentLoaded', function() {
 		const playButton = document.getElementById('play_button');
 		const pauseButton = document.getElementById('pause_button');
+		const zoomFullButton = document.getElementById('zoom-full');
+		const zoomNormalButton = document.getElementById('zoom-normal');
+		const centerCameraButton = document.getElementById('center-camera');
+		const stopFollowingButton = document.getElementById('stop-following');
+		const followAgentButtons = document.querySelectorAll('.follow-agent-btn');
 
 		if (playButton) {
 			playButton.addEventListener('click', startSimulation);
@@ -449,6 +604,78 @@
 		if (pauseButton) {
 			pauseButton.addEventListener('click', pauseSimulation);
 		}
+
+		// Zoom preset buttons
+		if (zoomFullButton) {
+			zoomFullButton.addEventListener('click', function() {
+				// Set zoom to show full ville (very zoomed out)
+				currentZoom = 0.25;
+				const camera = game.scene.scenes[0].cameras.main;
+				camera.setZoom(currentZoom);
+				updateZoomDisplay();
+				console.log(`Zoom preset: Full Ville View (${currentZoom}x)`);
+			});
+		}
+
+		if (zoomNormalButton) {
+			zoomNormalButton.addEventListener('click', function() {
+				// Set zoom to normal detailed view
+				currentZoom = 0.8;
+				const camera = game.scene.scenes[0].cameras.main;
+				camera.setZoom(currentZoom);
+				updateZoomDisplay();
+				console.log(`Zoom preset: Normal View (${currentZoom}x)`);
+			});
+		}
+
+		// Center camera button
+		if (centerCameraButton) {
+			centerCameraButton.addEventListener('click', function() {
+				const camera = game.scene.scenes[0].cameras.main;
+				// Center the free camera on ville
+				camera.setScroll(2240 - 750, 1600 - 400);
+				// Stop following any agent
+				currentlyFollowing = null;
+				if (game.scene.scenes[0]) {
+					game.scene.scenes[0].followingAgent = null;
+				}
+				updateFollowingDisplay();
+				console.log("Camera centered on ville");
+			});
+		}
+
+		// Stop following button
+		if (stopFollowingButton) {
+			stopFollowingButton.addEventListener('click', function() {
+				currentlyFollowing = null;
+				if (game.scene.scenes[0]) {
+					game.scene.scenes[0].followingAgent = null;
+				}
+				updateFollowingDisplay();
+				console.log("Stopped following agent. Free camera mode.");
+			});
+		}
+
+		// Agent follow buttons
+		followAgentButtons.forEach(button => {
+			button.addEventListener('click', function() {
+				const agentName = this.getAttribute('data-agent');
+				currentlyFollowing = agentName;
+				
+				// Call the global followAgent function
+				if (window.followAgent) {
+					window.followAgent(agentName);
+				}
+				
+				// Update the scene's following variable
+				if (game.scene.scenes[0]) {
+					game.scene.scenes[0].followingAgent = agentName;
+				}
+				
+				updateFollowingDisplay();
+				console.log(`Now following ${agentName}`);
+			});
+		});
 
 		// Auto-start if in simulate mode
 		if ('{{mode}}' === 'simulate') {

@@ -4,7 +4,7 @@
 <br>
 <br>
 <div>
-	<div id="game-container" style="text-align: center"></div>
+	<div id="game-container" style="text-align: center; margin: 0 auto; display: flex; justify-content: center; align-items: center; background-color: #f8f9fa; border: 2px solid #dee2e6; border-radius: 10px; padding: 10px;"></div>
 
 	<div style="width:55%; margin: 0 auto; margin-top:4.5em">
 		<h3 style="margin-bottom:-0.5em; font-size:1.5em">Current Time:</h3>
@@ -29,6 +29,26 @@
 		</div>
 
 		<br>
+		
+		<!-- Zoom Controls Display -->
+		<div class="row">
+			<div class="col-md-12">
+				<div class="alert alert-info" style="text-align: center; margin-bottom: 10px;">
+					<strong>🔍 Zoom Controls:</strong> 
+					Press <kbd>+</kbd> or <kbd>=</kbd> to zoom in, <kbd>-</kbd> to zoom out | 
+					<strong>📍 Camera Movement:</strong> <kbd>WASD</kbd> or Arrow keys | 
+					<strong>Current Zoom:</strong> <span id="zoom-level">0.5x</span>
+					<br><small>
+						<button id="zoom-full" class="btn btn-xs btn-primary" style="margin-top: 5px;">📍 View Full Ville</button>
+						<button id="zoom-normal" class="btn btn-xs btn-default" style="margin-top: 5px;">🔍 Normal View</button>
+						<button id="center-camera" class="btn btn-xs btn-success" style="margin-top: 5px;">🎯 Center Camera</button>
+						<button id="stop-following" class="btn btn-xs btn-warning" style="margin-top: 5px;">⏹️ Stop Following</button>
+					</small>
+					<br><small><strong>📹 Following:</strong> <span id="following-agent">Free Camera</span> | Press <kbd>ESC</kbd> to stop following</small>
+				</div>
+			</div>
+		</div>
+		
 		<hr style="border-color:#999999">
 		<br>
 
@@ -50,6 +70,12 @@
 					  <p style="font-size:1.2em"><strong>Current Action:</strong> <br><span id="current_action__{{ p_name_os }}"></span></p>
 					  <p style="font-size:1.2em"><strong>Location:</strong> <br><span id="target_address__{{ p_name_os }}"></span></p>
 					  <p style="font-size:1.2em"><strong>Current Conversation:</strong> <br><span id="chat__{{ p_name_os }}"></span></p>
+					  <div style="margin-top: 10px;">
+					  	<button class="btn btn-sm btn-primary follow-agent-btn" data-agent="{{ p_name }}" style="margin-right: 5px;">
+					  		📹 Follow {{ p_name.split()[0] }}
+					  	</button>
+					  	<small class="text-muted">Click to follow this agent's camera view</small>
+					  </div>
 					</div>
 			  </div>
 			</div>	

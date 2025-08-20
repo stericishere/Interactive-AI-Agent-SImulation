@@ -331,7 +331,7 @@ class DatabaseService:
             Number of records cleaned up
         """
         try:
-            from environment.frontend_server.dating_show_api.models import (
+            from dating_show_env.frontend_service.api.models import (
                 AgentMemorySnapshot, SimulationState, ComplianceViolation
             )
             

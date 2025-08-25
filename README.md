@@ -15,12 +15,12 @@
 <img src="cover.png" alt="Smallville" style="width: 80%; min-width: 300px; display: block; margin: auto;">
 </p>
 
-This repository contains an enhanced implementation of generative agents from the research paper "[Generative Agents: Interactive Simulacra of Human Behavior](https://arxiv.org/abs/2304.03442)." The implementation features a comprehensive dating show simulation with 25 AI agents using an advanced PIANO architecture, multiple frontend integrations, and production-ready orchestration systems.
+This repository contains an enhanced implementation of generative agents from the research paper "[Generative Agents: Interactive Simulacra of Human Behavior](https://arxiv.org/abs/2304.03442)." This simulation enhanced and reimplementation the agent behaviour with 8 AI agents using an advanced "[PIANO crchitecture](https://arxiv.org/html/2411.00114v1)", multiple frontend integrations, and production-ready orchestration systems.
 
 ## ✨ Features
 
 - **🎭 Dating Show Simulation**: 25 AI agents with specialized roles (contestants, hosts, producers).
-- **🧠 Enhanced PIANO Architecture**: Advanced cognitive modules with LangGraph integration for complex reasoning.
+- **🧠 Enhanced PIANO Architecture**: Advanced cognitive modules with LangGraph integration for complex reasoning. 
 - **🏗️ Multi-Frontend Support**: Real-time visualization with Django (port 8001) and FastAPI (port 8001) services.
 - **🔄 Real-time Orchestration**: Complete agent lifecycle management with error recovery and fault tolerance.
 - **💾 Advanced Memory Systems**: Episodic, semantic, and temporal memory with performance optimization.

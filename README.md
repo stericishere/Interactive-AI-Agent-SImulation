@@ -1,6 +1,15 @@
+# Generative Agents: Interactive Simulacra of Human Behavior
 
-
-# Generative Agents: Interactive Simulacra of Human Behavior 
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white" alt="Python"/>
+  <img src="https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white" alt="macOS"/>
+  <img src="https://img.shields.io/badge/PyTorch-EE4C2C?logo=pytorch&logoColor=white" alt="PyTorch"/>
+  <img src="https://img.shields.io/badge/Stable%20Baselines3-43B54A" alt="Stable Baselines3"/>
+  <img src="https://img.shields.io/badge/OpenCV-5C3EE8?logo=opencv&logoColor=white" alt="OpenCV"/>
+  <img src="https://img.shields.io/badge/PyAutoGUI-2F4F4F?logo=python&logoColor=white" alt="PyAutoGUI"/>
+  <img src="https://img.shields.io/badge/Pytest-0A9B0A?logo=pytest&logoColor=white" alt="Pytest"/>
+  <img src="https://img.shields.io/badge/Ruff-222?logo=ruff&logoColor=white" alt="Ruff"/>
+</p>
 
 <p align="center" width="100%">
 <img src="cover.png" alt="Smallville" style="width: 80%; min-width: 300px; display: block; margin: auto;">
@@ -8,157 +17,76 @@
 
 This repository contains an enhanced implementation of generative agents from the research paper "[Generative Agents: Interactive Simulacra of Human Behavior](https://arxiv.org/abs/2304.03442)." The implementation features a comprehensive dating show simulation with 25 AI agents using an advanced PIANO architecture, multiple frontend integrations, and production-ready orchestration systems.
 
-## ✨ Enhanced Features
+## ✨ Features
 
-- **🎭 Dating Show Simulation**: 25 AI agents with specialized roles (contestants, hosts, producers)
-- **🧠 Enhanced PIANO Architecture**: Advanced cognitive modules with LangGraph integration
-- **🏗️ Multi-Frontend Support**: Django (port 8001) + FastAPI (port 8001) services
-- **🔄 Real-time Orchestration**: Complete lifecycle management with error recovery
-- **💾 Enhanced Memory Systems**: Episodic, semantic, and temporal memory with performance optimization
-- **🎯 Role Specialization**: Dynamic role detection and skill development
-- **🌐 Production Ready**: Comprehensive error handling, testing, and deployment capabilities
+- **🎭 Dating Show Simulation**: 25 AI agents with specialized roles (contestants, hosts, producers).
+- **🧠 Enhanced PIANO Architecture**: Advanced cognitive modules with LangGraph integration for complex reasoning.
+- **🏗️ Multi-Frontend Support**: Real-time visualization with Django (port 8001) and FastAPI (port 8001) services.
+- **🔄 Real-time Orchestration**: Complete agent lifecycle management with error recovery and fault tolerance.
+- **💾 Advanced Memory Systems**: Episodic, semantic, and temporal memory with performance optimization.
+- **🎯 Role Specialization**: Dynamic role detection and skill development for agents.
+- **🌐 Production Ready**: Comprehensive error handling, 100% test coverage, and robust deployment capabilities.
+- **💬 Interactive Control**: Command-line interface to step through the simulation, auto-run, check status, and save state.
+- **Social Dynamics**: Relationship tracking, alliance formation, and drama detection.
 
-## 🚀 Quick Start
+## 📊 Project Status
 
-### Option 1: Enhanced Dating Show (Recommended)
-```bash
-# Standalone simulation with interactive control
-python run_dating_show_standalone.py
+**✅ PRODUCTION READY** - All development phases completed:
+- Enhanced PIANO architecture with LangGraph integration
+- Complete specialization and governance systems  
+- Multi-tier frontend integration (Django + FastAPI)
+- Comprehensive error handling and recovery
+- 100% test coverage with end-to-end validation
+- Performance benchmarks: <100ms latency, 500+ agent scaling
 
-# Full orchestration with all services
-cd dating_show && python main.py
+For detailed project information, see [`task.md`](task.md).
 
-# Auto-run 50 simulation steps
-cd dating_show && python main.py --run-steps 50
-```
+## 🚀 Getting Started
 
-### Option 2: Original Simulation
-Follow the original setup instructions below for the classic 3-agent or 25-agent Smallville simulation.
-
-## 📋 System Requirements
-
+### System Requirements
 - **Python**: 3.9+ (tested with 3.11.5)
-- **Dependencies**: Install from `requirements.txt` or `dating_show_requirements.txt` (streamlined)
-- **API Key**: OpenAI API key (or OpenRouter for enhanced features)
+- **Dependencies**: `pip install -r dating_show_requirements.txt`
+- **API Key**: OpenAI API key (or OpenRouter for enhanced features).
 
-## 🛠️ Setup Instructions
-
-### Enhanced Dating Show Setup
-1. **Install Dependencies**:
-   ```bash
-   pip install -r dating_show_requirements.txt
-   ```
-
-2. **Configure API** (Optional - uses mock agents if not configured):
-   ```bash
-   export OPENAI_API_KEY="your_openai_key_here"
-   # OR for OpenRouter integration
-   export OPENROUTER_API_KEY="your_openrouter_key_here"
-   ```
-
-3. **Run Simulation**:
-   ```bash
-   python run_dating_show_standalone.py
-   ```
-
-### Original Setup Instructions
-
-## <img src="https://joonsungpark.s3.amazonaws.com:443/static/assets/characters/profile/Isabella_Rodriguez.png" alt="Generative Isabella">   Setting Up the Environment 
-To set up the original environment, you will need to generate a `utils.py` file that contains your OpenAI API key and download the necessary packages.
-
-### Step 1. Generate Utils File
-In the `reverie/backend_server` folder (where `reverie.py` is located), create a new file titled `utils.py` and copy and paste the content below into the file:
-```
-# Copy and paste your OpenAI API Key
-openai_api_key = "<Your OpenAI API>"
-# Put your name
-key_owner = "<Name>"
-
-maze_assets_loc = "../../environment/frontend_server/static_dirs/assets"
-env_matrix = f"{maze_assets_loc}/the_ville/matrix"
-env_visuals = f"{maze_assets_loc}/the_ville/visuals"
-
-fs_storage = "../../environment/frontend_server/storage"
-fs_temp_storage = "../../environment/frontend_server/temp_storage"
-
-collision_block_id = "32125"
-
-# Verbose 
-debug = True
-```
-Replace `<Your OpenAI API>` with your OpenAI API key, and `<name>` with your name.
- 
-### Step 2. Install requirements.txt
-Install everything listed in the `requirements.txt` file (I strongly recommend first setting up a virtualenv as usual). A note on Python version: we tested our environment on Python 3.9.12. 
-
-## <img src="https://joonsungpark.s3.amazonaws.com:443/static/assets/characters/profile/Klaus_Mueller.png" alt="Generative Klaus">   Running a Simulation 
-To run a new simulation, you will need to concurrently start two servers: the environment server and the agent simulation server.
-
-### Step 1. Starting the Environment Server
-Again, the environment is implemented as a Django project, and as such, you will need to start the Django server. To do this, first navigate to `environment/frontend_server` (this is where `manage.py` is located) in your command line. Then run the following command:
-
-    python manage.py runserver
-
-Then, on your favorite browser, go to [http://localhost:8001/](http://localhost:8001/). If you see a message that says, "Your environment server is up and running," your server is running properly. Ensure that the environment server continues to run while you are running the simulation, so keep this command-line tab open! (Note: I recommend using either Chrome or Safari. Firefox might produce some frontend glitches, although it should not interfere with the actual simulation.)
-
-### Step 2. Starting the Simulation Server
-Open up another command line (the one you used in Step 1 should still be running the environment server, so leave that as it is). Navigate to `reverie/backend_server` and run `reverie.py`.
-
-    python reverie.py
-This will start the simulation server. A command-line prompt will appear, asking the following: "Enter the name of the forked simulation: ". To start a 3-agent simulation with Isabella Rodriguez, Maria Lopez, and Klaus Mueller, type the following:
-    
-    base_the_ville_isabella_maria_klaus
-The prompt will then ask, "Enter the name of the new simulation: ". Type any name to denote your current simulation (e.g., just "test-simulation" will do for now).
-
-    test-simulation
-Keep the simulator server running. At this stage, it will display the following prompt: "Enter option: "
-
-### Step 3. Running and Saving the Simulation
-On your browser, navigate to [http://localhost:8001/simulator_home](http://localhost:8001/simulator_home). You should see the map of Smallville, along with a list of active agents on the map. You can move around the map using your keyboard arrows. Please keep this tab open. To run the simulation, type the following command in your simulation server in response to the prompt, "Enter option":
-
-    run <step-count>
-Note that you will want to replace `<step-count>` above with an integer indicating the number of game steps you want to simulate. For instance, if you want to simulate 100 game steps, you should input `run 100`. One game step represents 10 seconds in the game.
-
-
-Your simulation should be running, and you will see the agents moving on the map in your browser. Once the simulation finishes running, the "Enter option" prompt will re-appear. At this point, you can simulate more steps by re-entering the run command with your desired game steps, exit the simulation without saving by typing `exit`, or save and exit by typing `fin`.
-
-The saved simulation can be accessed the next time you run the simulation server by providing the name of your simulation as the forked simulation. This will allow you to restart your simulation from the point where you left off.
-
-### Step 4. Replaying a Simulation
-You can replay a simulation that you have already run simply by having your environment server running and navigating to the following address in your browser: `http://localhost:8001/replay/<simulation-name>/<starting-time-step>`. Please make sure to replace `<simulation-name>` with the name of the simulation you want to replay, and `<starting-time-step>` with the integer time-step from which you wish to start the replay.
-
-For instance, by visiting the following link, you will initiate a pre-simulated example, starting at time-step 1:  
-[http://localhost:8001/replay/July1_the_ville_isabella_maria_klaus-step-3-20/1/](http://localhost:8001/replay/July1_the_ville_isabella_maria_klaus-step-3-20/1/)
-
-### Step 5. Demoing a Simulation
-You may have noticed that all character sprites in the replay look identical. We would like to clarify that the replay function is primarily intended for debugging purposes and does not prioritize optimizing the size of the simulation folder or the visuals. To properly demonstrate a simulation with appropriate character sprites, you will need to compress the simulation first. To do this, open the `compress_sim_storage.py` file located in the `reverie` directory using a text editor. Then, execute the `compress` function with the name of the target simulation as its input. By doing so, the simulation file will be compressed, making it ready for demonstration.
-
-To start the demo, go to the following address on your browser: `http://localhost:8001/demo/<simulation-name>/<starting-time-step>/<simulation-speed>`. Note that `<simulation-name>` and `<starting-time-step>` denote the same things as mentioned above. `<simulation-speed>` can be set to control the demo speed, where 1 is the slowest, and 5 is the fastest. For instance, visiting the following link will start a pre-simulated example, beginning at time-step 1, with a medium demo speed:  
-[http://localhost:8001/demo/July1_the_ville_isabella_maria_klaus-step-3-20/1/3/](http://localhost:8001/demo/July1_the_ville_isabella_maria_klaus-step-3-20/1/3/)
-
-### Tips
-We've noticed that OpenAI's API can hang when it reaches the hourly rate limit. When this happens, you may need to restart your simulation. For now, we recommend saving your simulation often as you progress to ensure that you lose as little of the simulation as possible when you do need to stop and rerun it. Running these simulations, at least as of early 2023, could be somewhat costly, especially when there are many agents in the environment.
-
-## 🎮 Enhanced Dating Show Features
+### Installation & Quick Start
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/j-sem/generative_agents.git
+    cd generative_agents
+    ```
+2.  **Install dependencies:**
+    ```bash
+    pip install -r dating_show_requirements.txt
+    ```
+3.  **Set up API key** (Optional - uses mock agents if not configured):
+    ```bash
+    export OPENAI_API_KEY="your_openai_key_here"
+    # OR for OpenRouter integration
+    export OPENROUTER_API_KEY="your_openrouter_key_here"
+    ```
+4.  **Run the simulation:**
+    - **Standalone (Recommended for quick start):**
+      ```bash
+      python run_dating_show_standalone.py
+      ```
+    - **Full orchestration with all services:**
+      ```bash
+      cd dating_show && python main.py
+      ```
+    - **Auto-run for 50 steps:**
+      ```bash
+      cd dating_show && python main.py --run-steps 50
+      ```
 
 ### Interactive Commands
-When running the dating show simulation:
-- `step` - Run one simulation step
-- `auto N` - Auto-run N steps (default: 10)
-- `status` - Show current simulation status
-- `save` - Save simulation state
-- `quit` - Exit simulation
+When running the standalone simulation, you can use the following commands:
+- `step`: Run one simulation step.
+- `auto N`: Auto-run N steps (e.g., `auto 50`).
+- `status`: Show current simulation status.
+- `save`: Save the simulation state.
+- `quit`: Exit the simulation.
 
-### Advanced Capabilities
-- **25 AI Agents**: Full Smallville cast with dating show roles
-- **Enhanced Memory**: Episodic, semantic, and temporal memory systems
-- **Role Specialization**: Contestants, hosts, and producers with unique behaviors
-- **Social Dynamics**: Relationship tracking, alliance formation, drama detection
-- **Frontend Integration**: Real-time visualization with Django and FastAPI
-- **Error Recovery**: Comprehensive fault tolerance and automatic recovery
-- **Performance**: <100ms decision latency, 500+ agent scaling capability
-
-### File Structure
+## 📁 File Structure
 ```
 generative_agents/
 ├── dating_show/                    # Enhanced PIANO simulation
@@ -174,49 +102,35 @@ generative_agents/
 └── run_dating_show_standalone.py  # Quick start entry point
 ```
 
-## 📊 Project Status
+## 🔧 Customization
 
-**✅ PRODUCTION READY** - All development phases completed:
-- Enhanced PIANO architecture with LangGraph integration
-- Complete specialization and governance systems  
-- Multi-tier frontend integration (Django + FastAPI)
-- Comprehensive error handling and recovery
-- 100% test coverage with end-to-end validation
-- Performance benchmarks: <100ms latency, 500+ agent scaling
+You can customize the simulation by authoring and loading agent histories.
 
-For detailed project information, see [`task.md`](task.md).
-
-## <img src="https://joonsungpark.s3.amazonaws.com:443/static/assets/characters/profile/Maria_Lopez.png" alt="Generative Maria">   Simulation Storage Location
-All simulations that you save will be located in `environment/frontend_server/storage`, and all compressed demos will be located in `environment/frontend_server/compressed_storage`. Enhanced dating show simulations also use `dating_show_env/frontend_service/storage/` for standalone operation. 
-
-## <img src="https://joonsungpark.s3.amazonaws.com:443/static/assets/characters/profile/Sam_Moore.png" alt="Generative Sam">   Customization
-
-There are two ways to optionally customize your simulations. 
-
-### Author and Load Agent History
-First is to initialize agents with unique history at the start of the simulation. To do this, you would want to 1) start your simulation using one of the base simulations, and 2) author and load agent history. More specifically, here are the steps:
-
-#### Step 1. Starting Up a Base Simulation 
-There are two base simulations included in the repository: `base_the_ville_n25` with 25 agents, and `base_the_ville_isabella_maria_klaus` with 3 agents. Load one of the base simulations by following the steps until step 2 above. 
-
-#### Step 2. Loading a History File 
-Then, when prompted with "Enter option: ", you should load the agent history by responding with the following command:
-
+1.  **Start a base simulation:** The main simulation runs with 8 agents. You can also use other base simulations like `base_the_ville_n25` (25 agents) or `base_the_ville_isabella_maria_klaus` (3 agents) for customization.
+2.  **Load a history file:** At the "Enter option:" prompt, use the command:
+    ```
     call -- load history the_ville/<history_file_name>.csv
-Note that you will need to replace `<history_file_name>` with the name of an existing history file. There are two history files included in the repo as examples: `agent_history_init_n25.csv` for `base_the_ville_n25` and `agent_history_init_n3.csv` for `base_the_ville_isabella_maria_klaus`. These files include semicolon-separated lists of memory records for each of the agents—loading them will insert the memory records into the agents' memory stream.
+    ```
+    Example files are provided (`agent_history_init_n25.csv` and `agent_history_init_n3.csv`).
+3.  **Create your own history:** Place your custom CSV file in `environment/frontend_server/static_dirs/assets/the_ville`. Match the format of the example files.
 
-#### Step 3. Further Customization 
-To customize the initialization by authoring your own history file, place your file in the following folder: `environment/frontend_server/static_dirs/assets/the_ville`. The column format for your custom history file will have to match the example history files included. Therefore, we recommend starting the process by copying and pasting the ones that are already in the repository.
+For more advanced customization, you can create new base simulations by copying and editing existing ones. This may require using the [Tiled](https://www.mapeditor.org/) map editor if you change agent names or numbers.
 
-### Create New Base Simulations
-For a more involved customization, you will need to author your own base simulation files. The most straightforward approach would be to copy and paste an existing base simulation folder, renaming and editing it according to your requirements. This process will be simpler if you decide to keep the agent names unchanged. However, if you wish to change their names or increase the number of agents that the Smallville map can accommodate, you might need to directly edit the map using the [Tiled](https://www.mapeditor.org/) map editor.
+## 💾 Simulation Storage
 
+-   **Saved simulations:** `environment/frontend_server/storage`
+-   **Compressed demos:** `environment/frontend_server/compressed_storage`
+-   **Dating show standalone simulations:** `dating_show_env/frontend_service/storage/`
 
-## <img src="https://joonsungpark.s3.amazonaws.com:443/static/assets/characters/profile/Eddy_Lin.png" alt="Generative Eddy">   Authors and Citation 
+## Legacy Simulation (Original Paper)
+
+For instructions on running the original simulation from the paper, please see `LEGACY_README.md`.
+
+## ✍️ Authors and Citation
 
 **Authors:** Joon Sung Park, Joseph C. O'Brien, Carrie J. Cai, Meredith Ringel Morris, Percy Liang, Michael S. Bernstein
 
-Please cite our paper if you use the code or data in this repository. 
+Please cite our paper if you use the code or data in this repository.
 ```
 @inproceedings{Park2023GenerativeAgents,  
 author = {Park, Joon Sung and O'Brien, Joseph C. and Cai, Carrie J. and Morris, Meredith Ringel and Liang, Percy and Bernstein, Michael S.},  
@@ -231,7 +145,7 @@ series = {UIST '23}
 }
 ```
 
-## <img src="https://joonsungpark.s3.amazonaws.com:443/static/assets/characters/profile/Wolfgang_Schulz.png" alt="Generative Wolfgang">   Acknowledgements
+## 🙏 Acknowledgements
 
 We encourage you to support the following three amazing artists who have designed the game assets for this project, especially if you are planning to use the assets included here for your own project: 
 * Background art: [PixyMoon (@_PixyMoon\_)](https://twitter.com/_PixyMoon_)
@@ -239,5 +153,3 @@ We encourage you to support the following three amazing artists who have designe
 * Character design: [ぴぽ (@pipohi)](https://twitter.com/pipohi)
 
 In addition, we thank Lindsay Popowski, Philip Guo, Michael Terry, and the Center for Advanced Study in the Behavioral Sciences (CASBS) community for their insights, discussions, and support. Lastly, all locations featured in Smallville are inspired by real-world locations that Joon has frequented as an undergraduate and graduate student---he thanks everyone there for feeding and supporting him all these years.
-
-

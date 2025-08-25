@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dating Show - Live Dashboard</title>
+    <title>Dating Show - Unified Dashboard</title>
     <link rel="stylesheet" href="/static/css/dashboard.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
     <div id="app">
@@ -27,10 +28,15 @@
         </header>
 
         <main class="main-content">
-            <div class="grid-container">
-                <!-- Agent Cards Section -->
+            <!-- Unified Dashboard Container - Auto-initialized by dating-show-app.js -->
+            <div id="dating-show-app">
+                <!-- Application will auto-render here -->
+            </div>
+            
+            <div class="grid-container" style="display: none;" id="fallback-dashboard">
+                <!-- Fallback Agent Cards Section -->
                 <section class="agents-section">
-                    <h2>Contestants</h2>
+                    <h2>Contestants (Fallback View)</h2>
                     <div class="agents-grid" id="agents-grid">
                         {% if simulation and simulation.agents %}
                             {% for agent in simulation.agents %}
@@ -107,11 +113,37 @@
         </main>
     </div>
 
+    <!-- Unified Architecture Frontend Components (Epic 3) -->
+    <script src="/static/js/websocket-client.js"></script>
+    <script src="/static/js/agent-visualizer.js"></script>
+    <script src="/static/js/social-network-viz.js"></script>
+    <script src="/static/js/performance-dashboard.js"></script>
+    <script src="/static/js/dating-show-app.js"></script>
+    
+    <!-- Fallback dashboard (original) -->
     <script src="/static/js/dashboard.js"></script>
+    
     <script>
-        // Initialize dashboard with server data
+        // Initialize unified dashboard with server data
         window.initialSimulation = {{ simulation.json() if simulation else 'null' }};
-        window.dashboard.init();
+        
+        // Auto-initialize the unified application
+        // This will be done automatically by dating-show-app.js if window.datingShowAutoInit is true
+        window.datingShowAutoInit = true;
+        
+        // Fallback initialization for original dashboard
+        try {
+            if (window.dashboard && !window.DatingShowApp) {
+                window.dashboard.init();
+                document.getElementById('fallback-dashboard').style.display = 'block';
+            }
+        } catch (error) {
+            console.warn('Unified dashboard unavailable, using fallback:', error);
+            if (window.dashboard) {
+                window.dashboard.init();
+                document.getElementById('fallback-dashboard').style.display = 'block';
+            }
+        }
     </script>
 </body>
 </html>

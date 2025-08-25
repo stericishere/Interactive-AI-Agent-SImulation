@@ -84,25 +84,56 @@ class Persona:
         
     def move(self, maze, personas, current_tile, curr_time):
         """
-        Core movement function for the persona
+        Core movement function for the persona with AI-generated behaviors
         Returns: (next_tile, pronunciatio_emoji, description)
         """
+        print(f"🤖 [PERSONA DEBUG] {self.name}.move() called at {curr_time} from position {current_tile}")
         try:
-            # Simple movement logic for dating show
+            # Get current position
             x, y = current_tile
             
-            # Random movement within bounds
-            new_x = max(10, min(90, x + random.randint(-2, 2)))
-            new_y = max(10, min(90, y + random.randint(-2, 2)))
+            # Use actual map dimensions from maze configuration
+            max_x = maze.maze_width - 1 if hasattr(maze, 'maze_width') else 139  # Default to 139 (140-1)
+            max_y = maze.maze_height - 1 if hasattr(maze, 'maze_height') else 99   # Default to 99 (100-1)
+            
+            # Generate movement attempt with realistic boundaries
+            attempts = 0
+            max_attempts = 5
+            
+            while attempts < max_attempts:
+                # Random movement within map bounds
+                delta_x = random.randint(-2, 2)
+                delta_y = random.randint(-2, 2)
+                
+                new_x = max(0, min(max_x, x + delta_x))
+                new_y = max(0, min(max_y, y + delta_y))
+                
+                # Check collision detection if maze has collision data
+                if hasattr(maze, 'collision_maze') and maze.collision_maze:
+                    # Ensure coordinates are within collision maze bounds
+                    if (0 <= new_y < len(maze.collision_maze) and 
+                        0 <= new_x < len(maze.collision_maze[0])):
+                        # Check if position is not blocked (collision_maze uses "0" for open space)
+                        if maze.collision_maze[new_y][new_x] == "0":
+                            break  # Valid position found
+                    attempts += 1
+                else:
+                    # No collision detection available, use the coordinates
+                    break
+            
+            # If all attempts failed, stay at current position
+            if attempts >= max_attempts:
+                new_x, new_y = x, y
+                print(f"🚧 [COLLISION] {self.name} couldn't find valid move from {current_tile}, staying put")
             
             next_tile = (new_x, new_y)
             
-            # Dating show appropriate emojis
-            emojis = ["💕", "🌹", "💬", "😊", "🥰", "💭", "✨", "🌟"]
-            pronunciatio = random.choice(emojis)
+            # Generate AI-powered description
+            description = self._generate_ai_description(curr_time, current_tile, personas)
             
-            # Generate description based on current activity
-            description = f"{self.scratch.daily_plan_req} @ villa"
+            # Dating show appropriate emojis
+            emojis = ["💕", "🌹", "💬", "😊", "🥰", "💭", "✨", "🌟", "🔥", "🌺", "📚", "🎵", "🍃", "⚡", "🎮", "🌸", "🛠️", "🎬"]
+            pronunciatio = random.choice(emojis)
             
             # Update internal state
             self.last_position = next_tile
@@ -114,6 +145,118 @@ class Persona:
             print(f"Error in persona movement for {self.name}: {e}")
             # Return safe default
             return current_tile, "🤔", "thinking"
+    
+    def _generate_ai_description(self, curr_time, current_tile, personas):
+        """Generate AI-powered description for the persona's current activity"""
+        print(f"🧠 [AI DEBUG] Generating AI description for {self.name}")
+        
+        # First, check if there's a cached batch result
+        try:
+            import sys
+            import os
+            sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
+            from agents.batch_activity_coordinator import batch_coordinator
+            
+            cached_activity = batch_coordinator.get_cached_activity(self.name)
+            if cached_activity and batch_coordinator.last_batch_time:
+                # Check if cache is recent (within the same simulation step)
+                time_diff = abs((curr_time - batch_coordinator.last_batch_time).total_seconds()) if hasattr(curr_time, 'total_seconds') else 0
+                if time_diff < 60:  # Cache valid for 1 minute
+                    print(f"📋 [CACHE] Using cached batch result for {self.name}: {cached_activity}")
+                    return cached_activity
+        except Exception as e:
+            print(f"⚠️ [CACHE] Could not access batch cache: {e}")
+        
+        # Fall back to individual API call
+        try:
+            # Import AI generation functions
+            import sys
+            import os
+            sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
+            from agents.prompt_template.gpt_structure import openrouter_request
+            
+            # Get nearby personas for context
+            nearby_personas = self._get_nearby_personas(current_tile, personas)
+            
+            # Use PromptManager to create template-based prompt
+            from agents.prompt_template.dating_show_v1.prompts import PromptManager
+            
+            template_path = os.path.join(os.path.dirname(__file__), "..", "..", "agents", "prompt_template", "dating_show_v1")
+            prompt_manager = PromptManager(template_path)
+            
+            # Get current show events (could be enhanced with real events later)
+            show_events = self._get_current_show_events(curr_time)
+            episode_info = self._get_episode_info(curr_time)
+            
+            # Generate prompt using template
+            prompt = prompt_manager.format_activity_prompt(
+                agent_name=self.name,
+                curr_time=curr_time,
+                current_tile=current_tile,
+                activity=self.scratch.daily_plan_req,
+                nearby_personas=nearby_personas,
+                show_events=show_events,
+                episode_info=episode_info
+            )
+            
+            print(f"📝 [TEMPLATE DEBUG] Using template-based prompt for {self.name}")
+
+            # Make AI request
+            messages = [{"role": "user", "content": prompt}]
+            response = openrouter_request(messages, temperature=0.8, max_tokens=50)
+            
+            if response and 'choices' in response and response['choices']:
+                ai_description = response['choices'][0]['message']['content'].strip()
+                # Ensure it ends with @ villa
+                if not ai_description.endswith('@ villa'):
+                    ai_description = f"{ai_description} @ villa"
+                print(f"🤖 [DEBUG] AI generated for {self.name}: {ai_description}")
+                return ai_description
+            else:
+                # Fallback if AI call fails
+                print(f"⚠️ [DEBUG] AI response empty for {self.name}")
+                return f"{self.name} is {self.scratch.daily_plan_req} @ villa"
+                
+        except Exception as e:
+            # Fallback if AI generation fails
+            print(f"🚨 [DEBUG] AI description generation failed for {self.name}: {e}")
+            return f"{self.name} is {self.scratch.daily_plan_req} @ villa"
+    
+    def _get_nearby_personas(self, current_tile, personas, distance_threshold=10):
+        """Get list of personas within distance threshold"""
+        nearby = []
+        x, y = current_tile
+        
+        for name, persona in personas.items():
+            if name != self.name and hasattr(persona, 'last_position'):
+                other_x, other_y = persona.last_position
+                distance = ((x - other_x) ** 2 + (y - other_y) ** 2) ** 0.5
+                if distance <= distance_threshold:
+                    nearby.append(name)
+        
+        return nearby[:3]  # Limit to 3 nearby personas
+    
+    def _get_current_show_events(self, curr_time):
+        """Get current show events based on time - can be enhanced later"""
+        # Simple time-based events for now
+        hour = curr_time.hour if hasattr(curr_time, 'hour') else 12
+        
+        if 8 <= hour < 12:
+            return "Morning activities and breakfast conversations"
+        elif 12 <= hour < 16:
+            return "Afternoon dates and pool time"
+        elif 16 <= hour < 20:
+            return "Evening preparation and villa activities"
+        elif 20 <= hour < 24:
+            return "Dinner time and potential elimination ceremony"
+        else:
+            return "Late night conversations and strategic planning"
+    
+    def _get_episode_info(self, curr_time):
+        """Get current episode info - can be enhanced with real episode tracking"""
+        # Simple episode calculation based on simulation time
+        # Could be enhanced to track actual episodes
+        return "Hearts on Fire - Episode 1"
     
     def save(self, save_folder):
         """Save persona state to folder"""

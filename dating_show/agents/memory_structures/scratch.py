@@ -9,7 +9,7 @@ import json
 import sys
 sys.path.append('../../')
 
-from global_methods import *
+from ...reverie_core.global_methods import *
 
 class Scratch: 
   def __init__(self, f_saved): 

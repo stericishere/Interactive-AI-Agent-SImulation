@@ -14,8 +14,9 @@ from datetime import datetime
 from pathlib import Path
 from unittest.mock import Mock, patch, MagicMock
 
-# Import our services
-from dating_show.services.agent_state_bridge import AgentStateBridge, StandardAgentState
+# Import our services - Updated for unified architecture
+from dating_show.services.unified_agent_manager import get_unified_agent_manager
+from dating_show.agents.enhanced_agent_state import create_enhanced_agent_state
 from dating_show.services.environment_generator import EnvironmentGenerator
 from dating_show.services.error_recovery import ErrorRecoveryService, ErrorSeverity
 

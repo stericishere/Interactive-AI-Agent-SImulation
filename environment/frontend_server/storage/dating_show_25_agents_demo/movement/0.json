@@ -1,0 +1,382 @@
+{
+  "persona": {
+    "Latoya Williams": {
+      "movement": [
+        20,
+        20
+      ],
+      "pronunciatio": "networking",
+      "description": "Latoya Williams is networking at terrace",
+      "chat": "",
+      "scratch": {
+        "curr_tile": [
+          "terrace"
+        ],
+        "daily_plan_req": "networking"
+      }
+    },
+    "Rajiv Patel": {
+      "movement": [
+        40,
+        20
+      ],
+      "pronunciatio": "analyzing",
+      "description": "Rajiv Patel is analyzing at villa entrance",
+      "chat": "",
+      "scratch": {
+        "curr_tile": [
+          "villa entrance"
+        ],
+        "daily_plan_req": "analyzing"
+      }
+    },
+    "Abigail Chen": {
+      "movement": [
+        60,
+        20
+      ],
+      "pronunciatio": "observing",
+      "description": "Abigail Chen is observing at pool area",
+      "chat": "",
+      "scratch": {
+        "curr_tile": [
+          "pool area"
+        ],
+        "daily_plan_req": "observing"
+      }
+    },
+    "Francisco Lopez": {
+      "movement": [
+        80,
+        20
+      ],
+      "pronunciatio": "mingling",
+      "description": "Francisco Lopez is mingling at pool area",
+      "chat": "",
+      "scratch": {
+        "curr_tile": [
+          "pool area"
+        ],
+        "daily_plan_req": "mingling"
+      }
+    },
+    "Hailey Johnson": {
+      "movement": [
+        100,
+        20
+      ],
+      "pronunciatio": "socializing",
+      "description": "Hailey Johnson is socializing at dating show location",
+      "chat": "",
+      "scratch": {
+        "curr_tile": [
+          "dating show location"
+        ],
+        "daily_plan_req": "socializing"
+      }
+    },
+    "Arthur Burton": {
+      "movement": [
+        20,
+        35
+      ],
+      "pronunciatio": "connecting",
+      "description": "Arthur Burton is connecting at fire pit",
+      "chat": "",
+      "scratch": {
+        "curr_tile": [
+          "fire pit"
+        ],
+        "daily_plan_req": "connecting"
+      }
+    },
+    "Ryan Park": {
+      "movement": [
+        40,
+        35
+      ],
+      "pronunciatio": "bonding",
+      "description": "Ryan Park is bonding at terrace",
+      "chat": "",
+      "scratch": {
+        "curr_tile": [
+          "terrace"
+        ],
+        "daily_plan_req": "bonding"
+      }
+    },
+    "Isabella Rodriguez": {
+      "movement": [
+        60,
+        35
+      ],
+      "pronunciatio": "bonding",
+      "description": "Isabella Rodriguez is bonding at pool area",
+      "chat": "",
+      "scratch": {
+        "curr_tile": [
+          "pool area"
+        ],
+        "daily_plan_req": "bonding"
+      }
+    },
+    "Giorgio Rossi": {
+      "movement": [
+        80,
+        35
+      ],
+      "pronunciatio": "interacting",
+      "description": "Giorgio Rossi is interacting at fire pit",
+      "chat": "",
+      "scratch": {
+        "curr_tile": [
+          "fire pit"
+        ],
+        "daily_plan_req": "interacting"
+      }
+    },
+    "Carlos Gomez": {
+      "movement": [
+        100,
+        35
+      ],
+      "pronunciatio": "interacting",
+      "description": "Carlos Gomez is interacting at garden",
+      "chat": "",
+      "scratch": {
+        "curr_tile": [
+          "garden"
+        ],
+        "daily_plan_req": "interacting"
+      }
+    },
+    "Klaus Mueller": {
+      "movement": [
+        20,
+        50
+      ],
+      "pronunciatio": "connecting",
+      "description": "Klaus Mueller is connecting at living room",
+      "chat": "",
+      "scratch": {
+        "curr_tile": [
+          "living room"
+        ],
+        "daily_plan_req": "connecting"
+      }
+    },
+    "Maria Lopez": {
+      "movement": [
+        40,
+        50
+      ],
+      "pronunciatio": "socializing",
+      "description": "Maria Lopez is socializing at fire pit",
+      "chat": "",
+      "scratch": {
+        "curr_tile": [
+          "fire pit"
+        ],
+        "daily_plan_req": "socializing"
+      }
+    },
+    "Ayesha Khan": {
+      "movement": [
+        60,
+        50
+      ],
+      "pronunciatio": "exploring",
+      "description": "Ayesha Khan is exploring at cocktail area",
+      "chat": "",
+      "scratch": {
+        "curr_tile": [
+          "cocktail area"
+        ],
+        "daily_plan_req": "exploring"
+      }
+    },
+    "Wolfgang Schulz": {
+      "movement": [
+        80,
+        50
+      ],
+      "pronunciatio": "strategizing",
+      "description": "Wolfgang Schulz is strategizing at living room",
+      "chat": "",
+      "scratch": {
+        "curr_tile": [
+          "living room"
+        ],
+        "daily_plan_req": "strategizing"
+      }
+    },
+    "Mei Lin": {
+      "movement": [
+        100,
+        50
+      ],
+      "pronunciatio": "networking",
+      "description": "Mei Lin is networking at terrace",
+      "chat": "",
+      "scratch": {
+        "curr_tile": [
+          "terrace"
+        ],
+        "daily_plan_req": "networking"
+      }
+    },
+    "John Lin": {
+      "movement": [
+        20,
+        65
+      ],
+      "pronunciatio": "observing",
+      "description": "John Lin is observing at cocktail area",
+      "chat": "",
+      "scratch": {
+        "curr_tile": [
+          "cocktail area"
+        ],
+        "daily_plan_req": "observing"
+      }
+    },
+    "Eddy Lin": {
+      "movement": [
+        40,
+        65
+      ],
+      "pronunciatio": "chatting",
+      "description": "Eddy Lin is chatting at terrace",
+      "chat": "",
+      "scratch": {
+        "curr_tile": [
+          "terrace"
+        ],
+        "daily_plan_req": "chatting"
+      }
+    },
+    "Jane Moreno": {
+      "movement": [
+        60,
+        65
+      ],
+      "pronunciatio": "participating",
+      "description": "Jane Moreno is participating at cocktail area",
+      "chat": "",
+      "scratch": {
+        "curr_tile": [
+          "cocktail area"
+        ],
+        "daily_plan_req": "participating"
+      }
+    },
+    "Tom Moreno": {
+      "movement": [
+        80,
+        65
+      ],
+      "pronunciatio": "analyzing",
+      "description": "Tom Moreno is analyzing at pool area",
+      "chat": "",
+      "scratch": {
+        "curr_tile": [
+          "pool area"
+        ],
+        "daily_plan_req": "analyzing"
+      }
+    },
+    "Tamara Taylor": {
+      "movement": [
+        100,
+        65
+      ],
+      "pronunciatio": "participating",
+      "description": "Tamara Taylor is participating at living room",
+      "chat": "",
+      "scratch": {
+        "curr_tile": [
+          "living room"
+        ],
+        "daily_plan_req": "participating"
+      }
+    },
+    "Carmen Ortiz": {
+      "movement": [
+        20,
+        80
+      ],
+      "pronunciatio": "socializing",
+      "description": "Carmen Ortiz is socializing at cocktail area",
+      "chat": "",
+      "scratch": {
+        "curr_tile": [
+          "cocktail area"
+        ],
+        "daily_plan_req": "socializing"
+      }
+    },
+    "Adam Smith": {
+      "movement": [
+        40,
+        80
+      ],
+      "pronunciatio": "conversing",
+      "description": "Adam Smith is conversing at garden",
+      "chat": "",
+      "scratch": {
+        "curr_tile": [
+          "garden"
+        ],
+        "daily_plan_req": "conversing"
+      }
+    },
+    "Yuriko Yamamoto": {
+      "movement": [
+        60,
+        80
+      ],
+      "pronunciatio": "strategizing",
+      "description": "Yuriko Yamamoto is strategizing at villa entrance",
+      "chat": "",
+      "scratch": {
+        "curr_tile": [
+          "villa entrance"
+        ],
+        "daily_plan_req": "strategizing"
+      }
+    },
+    "Sam Moore": {
+      "movement": [
+        80,
+        80
+      ],
+      "pronunciatio": "mingling",
+      "description": "Sam Moore is mingling at villa entrance",
+      "chat": "",
+      "scratch": {
+        "curr_tile": [
+          "villa entrance"
+        ],
+        "daily_plan_req": "mingling"
+      }
+    },
+    "Jennifer Moore": {
+      "movement": [
+        100,
+        80
+      ],
+      "pronunciatio": "analyzing",
+      "description": "Jennifer Moore is analyzing at terrace",
+      "chat": "",
+      "scratch": {
+        "curr_tile": [
+          "terrace"
+        ],
+        "daily_plan_req": "analyzing"
+      }
+    }
+  },
+  "meta": {
+    "curr_time": "August 23, 2025, 03:52:39"
+  }
+}

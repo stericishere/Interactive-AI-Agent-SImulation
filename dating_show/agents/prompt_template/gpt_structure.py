@@ -2,7 +2,7 @@
 Author: Joon Sung Park (joonspk@stanford.edu)
 
 File: gpt_structure.py
-Description: Wrapper functions for calling OpenRouter APIs with llama-4-maverick model.
+Description: Wrapper functions for calling OpenRouter APIs with deepseek/deepseek-chat-v3-0324:freemodel.
 """
 import json
 import random
@@ -15,7 +15,7 @@ from utils import *
 # OpenRouter configuration
 OPENROUTER_API_KEY = openrouter_api_key
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
-MODEL_NAME = "llama-4-maverick"
+MODEL_NAME = "deepseek/deepseek-chat-v3-0324:free"
 
 def temp_sleep(seconds=0.1):
   time.sleep(seconds)

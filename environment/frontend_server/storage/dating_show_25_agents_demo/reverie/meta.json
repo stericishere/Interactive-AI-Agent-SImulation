@@ -1,0 +1,9 @@
+{
+  "fork_sim_code": "base_the_ville_n25",
+  "sim_code": "dating_show_25_agents_demo",
+  "created_at": "2025-08-23T03:52:39.747014",
+  "description": "Dating show simulation with 25 agents",
+  "agents_count": 25,
+  "current_step": 0,
+  "status": "initialized"
+}

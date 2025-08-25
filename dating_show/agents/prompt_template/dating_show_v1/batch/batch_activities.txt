@@ -1,0 +1,62 @@
+batch_activities.txt
+
+Variables:
+!<INPUT 0>! -- Current time
+!<INPUT 1>! -- Episode information  
+!<INPUT 2>! -- Current show events/challenges
+!<INPUT 3>! -- Contestants data (formatted list)
+
+<commentblockmarker>###</commentblockmarker>
+
+<World_Context>
+Dating show "Hearts on Fire" - Luxury villa with pool, hot tub, campfire area, and private date spots.
+
+Show Rules:
+1. Form genuine connections with other contestants
+2. Participate in all mandatory events and challenges
+3. Give honest confessional interviews  
+4. Survive weekly rose ceremonies to stay in the game
+5. The final couple remaining wins "Hearts on Fire"
+</World_Context>
+
+<Current_Simulation>
+Episode: !<INPUT 1>!
+Time: !<INPUT 0>! at Hearts on Fire villa
+Current Show Events: !<INPUT 2>!
+
+Contestants and their current situations:
+!<INPUT 3>!
+</Current_Simulation>
+
+<Instructions>
+Generate realistic 10-15 word activity descriptions for each contestant based on their current situation in the Hearts on Fire villa.
+
+Consider the villa atmosphere and dating show dynamics:
+- Romantic conversations and flirting between contestants
+- Strategic discussions about rose ceremonies and eliminations  
+- Building connections, alliances, and romantic relationships
+- Participating in challenges, dates, and villa activities
+- Confessional-worthy moments, drama, and emotional conversations
+- Time-appropriate activities (poolside relaxation, dinner prep, evening conversations)
+
+Each description should:
+- Be specific to the Hearts on Fire show and villa setting
+- Reflect authentic dating show contestant behavior
+- Consider nearby contestants for potential interactions
+- Match the current time and ongoing show events
+- Sound natural and engaging for viewers
+- End with "@ villa"
+
+Format: Return exactly one numbered description per contestant, in the order provided.
+</Instructions>
+
+<Activities>
+1.
+2.
+3.
+4.
+5.
+6.
+7.
+8.
+</Activities>

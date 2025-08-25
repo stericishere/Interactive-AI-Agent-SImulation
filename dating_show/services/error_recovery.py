@@ -67,12 +67,16 @@ class ErrorRecoveryService:
         
         # Recovery strategies by component
         self.recovery_strategies = {
-            'reverie_simulation': [RecoveryStrategy.RETRY, RecoveryStrategy.FALLBACK],
-            'environment_generator': [RecoveryStrategy.RETRY, RecoveryStrategy.GRACEFUL_DEGRADATION],
-            'agent_state_bridge': [RecoveryStrategy.RETRY, RecoveryStrategy.FALLBACK],
-            'frontend_bridge': [RecoveryStrategy.RETRY, RecoveryStrategy.GRACEFUL_DEGRADATION],
+            'unified_agent_manager': [RecoveryStrategy.RETRY, RecoveryStrategy.FALLBACK],
+            'frontend_state_adapter': [RecoveryStrategy.RETRY, RecoveryStrategy.GRACEFUL_DEGRADATION],
+            'update_pipeline': [RecoveryStrategy.RETRY, RecoveryStrategy.GRACEFUL_DEGRADATION],
+            'websocket_bridge': [RecoveryStrategy.RETRY, RecoveryStrategy.GRACEFUL_DEGRADATION],
             'file_io': [RecoveryStrategy.RETRY, RecoveryStrategy.SKIP],
             'api_communication': [RecoveryStrategy.RETRY, RecoveryStrategy.GRACEFUL_DEGRADATION],
+            # DEPRECATED: Legacy components - kept for backward compatibility
+            'reverie_simulation': [RecoveryStrategy.FALLBACK],  # Use unified_agent_manager instead
+            'agent_state_bridge': [RecoveryStrategy.FALLBACK],  # Use frontend_state_adapter instead
+            'frontend_bridge': [RecoveryStrategy.FALLBACK],     # Use update_pipeline instead
             'default': [RecoveryStrategy.RETRY, RecoveryStrategy.SKIP]
         }
         

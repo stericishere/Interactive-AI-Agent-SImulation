@@ -9,8 +9,8 @@ import json
 import sys
 sys.path.append('../../')
 
-from utils import *
-from global_methods import *
+from ...reverie_core.utils import *
+from ...reverie_core.global_methods import *
 
 class MemoryTree: 
   def __init__(self, f_saved): 

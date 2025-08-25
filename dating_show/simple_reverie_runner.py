@@ -204,7 +204,7 @@ class SimpleReverieRunner:
         """Run simulation automatically for specified steps"""
         print(f"🎬 Starting auto-simulation for {steps} steps...")
         print(f"⏱️  Step delay: {delay}s")
-        print("🌐 Frontend URL: http://localhost:8000/simulator_home")
+        print("🌐 Frontend URL: http://localhost:8001/simulator_home")
         print("-" * 50)
         
         success_count = 0

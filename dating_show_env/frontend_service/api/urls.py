@@ -45,4 +45,11 @@ urlpatterns = [
     
     # Real-time update endpoints
     re_path(r'^api/broadcast/update/$', views.api_broadcast_update, name='api_broadcast_update'),
+    
+    # Unified architecture endpoints
+    re_path(r'^api/unified/status/$', views.api_unified_architecture_status, name='api_unified_architecture_status'),
+    re_path(r'^api/batch/update/$', views.api_batch_update, name='api_batch_update'),
+    
+    # UpdatePipeline endpoints
+    re_path(r'^api/pipeline/validate/$', views.api_pipeline_validation, name='api_pipeline_validation'),
 ]

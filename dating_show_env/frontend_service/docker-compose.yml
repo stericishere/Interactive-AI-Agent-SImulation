@@ -7,5 +7,5 @@ services:
       - HOST=0.0.0.0
       - PORT=8001
       - DEBUG=true
-      - DATING_SHOW_BACKEND_URL=http://host.docker.internal:8000
+      - DATING_SHOW_BACKEND_URL=http://host.docker.internal:8001
     restart: unless-stopped

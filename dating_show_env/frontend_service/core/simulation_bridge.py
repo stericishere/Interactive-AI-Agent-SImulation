@@ -13,6 +13,7 @@ from datetime import datetime
 
 from .models import SimulationState, AgentState, EnvironmentState, Position, AgentRole, SimulationMode
 from .config import Settings
+from .movement_generator import MovementFileGenerator
 
 logger = logging.getLogger(__name__)
 
@@ -35,11 +36,15 @@ class SimulationBridge:
             
         self._cached_state: Optional[SimulationState] = None
         self._last_update: Optional[datetime] = None
+        
+        # Initialize movement file generator
+        self.movement_generator = MovementFileGenerator(str(self.storage_path))
     
     async def initialize(self):
         """Initialize the simulation bridge"""
         logger.info("Initializing simulation bridge")
         await self._validate_paths()
+        await self._ensure_movement_files()
         await self._load_initial_state()
     
     async def cleanup(self):
@@ -63,6 +68,22 @@ class SimulationBridge:
         if not self.storage_path.exists():
             logger.warning(f"Storage path does not exist: {self.storage_path}")
             self.storage_path.mkdir(parents=True, exist_ok=True)
+    
+    async def _ensure_movement_files(self):
+        """Ensure movement files exist for current simulation"""
+        try:
+            sim_code = await self._get_current_sim_code()
+            if sim_code:
+                logger.info(f"Checking movement files for simulation: {sim_code}")
+                missing_files = self.movement_generator.get_missing_movement_files(sim_code)
+                if missing_files:
+                    logger.info(f"Creating {len(missing_files)} missing movement files")
+                    await self.movement_generator.generate_missing_files_for_simulation(sim_code)
+                else:
+                    logger.info("All required movement files exist")
+        except Exception as e:
+            logger.warning(f"Error ensuring movement files: {e}")
+            # Continue without failing - frontend can work without movement files
     
     async def _load_initial_state(self):
         """Load initial simulation state"""

@@ -13,7 +13,7 @@ sys.path.append('../../')
 import json
 import datetime
 
-from global_methods import *
+from ...reverie_core.global_methods import *
 
 
 class ConceptNode: 

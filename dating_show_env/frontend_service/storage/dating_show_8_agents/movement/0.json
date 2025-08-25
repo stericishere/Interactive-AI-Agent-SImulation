@@ -1,0 +1,79 @@
+{
+  "persona": {
+    "Latoya Williams": {
+      "movement": [
+        16,
+        18
+      ],
+      "pronunciatio": "\ud83c\udf39",
+      "description": "sharing stories with housemates",
+      "chat": null
+    },
+    "Rajiv Patel": {
+      "movement": [
+        73,
+        74
+      ],
+      "pronunciatio": "\ud83c\udfb5",
+      "description": "relaxing in the lounge",
+      "chat": null
+    },
+    "Abigail Chen": {
+      "movement": [
+        93,
+        74
+      ],
+      "pronunciatio": "\ud83c\udfac",
+      "description": "reflecting on relationships",
+      "chat": null
+    },
+    "Francisco Lopez": {
+      "movement": [
+        36,
+        32
+      ],
+      "pronunciatio": "\ud83c\udf73",
+      "description": "working out in the gym",
+      "chat": null
+    },
+    "Hailey Johnson": {
+      "movement": [
+        86,
+        18
+      ],
+      "pronunciatio": "\ud83d\udd25",
+      "description": "reflecting on relationships",
+      "chat": null
+    },
+    "Arthur Burton": {
+      "movement": [
+        54,
+        74
+      ],
+      "pronunciatio": "\u2728",
+      "description": "relaxing in the lounge",
+      "chat": null
+    },
+    "Ryan Park": {
+      "movement": [
+        118,
+        61
+      ],
+      "pronunciatio": "\ud83c\udfae",
+      "description": "participating in group activities",
+      "chat": null
+    },
+    "Isabella Rodriguez": {
+      "movement": [
+        26,
+        18
+      ],
+      "pronunciatio": "\ud83c\udf19",
+      "description": "relaxing in the lounge",
+      "chat": null
+    }
+  },
+  "meta": {
+    "curr_time": "August 24, 2025, 21:57:43"
+  }
+}

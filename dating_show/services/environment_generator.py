@@ -425,11 +425,12 @@ class EnvironmentGenerator:
                 prev_mov_data = json.load(f)
             
             # Generate new environment data with small position changes
+            # Use proper map boundaries: 140x100 (0-139, 0-99)
             new_env_data = {}
             for name, data in prev_env_data.items():
-                # Small random movement
-                new_x = max(10, min(130, data['x'] + random.randint(-3, 3)))
-                new_y = max(10, min(80, data['y'] + random.randint(-3, 3)))
+                # Small random movement within proper map bounds
+                new_x = max(0, min(139, data['x'] + random.randint(-3, 3)))
+                new_y = max(0, min(99, data['y'] + random.randint(-3, 3)))
                 
                 new_env_data[name] = {
                     "maze": "the_ville",

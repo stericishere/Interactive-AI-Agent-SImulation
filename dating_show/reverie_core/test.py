@@ -13,7 +13,7 @@ import os
 # OpenRouter configuration
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "your-openrouter-api-key-here")
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
-MODEL_NAME = "llama-4-maverick"
+MODEL_NAME = "deepseek/deepseek-chat-v3-0324:free"
 
 def openrouter_request(messages, model=MODEL_NAME, temperature=0.7, max_tokens=None):
   """

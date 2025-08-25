@@ -1,5 +1,0 @@
-Requirement already satisfied: requests in /Users/rubbishtsui/miniconda3/lib/python3.11/site-packages (2.31.0)
-Requirement already satisfied: charset-normalizer<4,>=2 in /Users/rubbishtsui/miniconda3/lib/python3.11/site-packages (from requests) (2.0.4)
-Requirement already satisfied: idna<4,>=2.5 in /Users/rubbishtsui/miniconda3/lib/python3.11/site-packages (from requests) (3.4)
-Requirement already satisfied: urllib3<3,>=1.21.1 in /Users/rubbishtsui/miniconda3/lib/python3.11/site-packages (from requests) (2.5.0)
-Requirement already satisfied: certifi>=2017.4.17 in /Users/rubbishtsui/miniconda3/lib/python3.11/site-packages (from requests) (2025.8.3)

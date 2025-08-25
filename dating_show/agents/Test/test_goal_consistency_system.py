@@ -473,7 +473,7 @@ class TestIntegrationScenarios:
                 {"action": "organize_social_event", "timestamp": time.time() - 3000, "success": True},
             ],
             "history": [
-                {"type": "goal", "goal_type": "management", "timestamp": time.time() - 8000, "relevance_score": 0.9},
+                {"type": "goal", "goal_type": "management", "timestamp": time.time() - 8001, "relevance_score": 0.9},
                 {"type": "action", "action": "plan_event", "timestamp": time.time() - 7200, "success": True},
                 {"type": "action", "action": "coordinate_team", "timestamp": time.time() - 6600, "success": True},
                 {"type": "goal", "goal_type": "social", "timestamp": time.time() - 6300, "relevance_score": 0.6},

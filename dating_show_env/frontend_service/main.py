@@ -23,6 +23,13 @@ from core.models import SimulationState, AgentState, EnvironmentState
 from core.websocket_manager import WebSocketManager
 from core.simulation_bridge import SimulationBridge
 from core.config import Settings
+from core.startup_initializer import StartupInitializer
+
+# Import unified architecture WebSocket router
+from api.websocket_router import router as websocket_router, connection_manager
+
+# Import health check system
+from core.health_checks import get_health_manager
 
 settings = Settings()
 app = FastAPI(title="Dating Show Frontend Service", version="1.0.0")
@@ -37,11 +44,17 @@ app.add_middleware(
 
 websocket_manager = WebSocketManager()
 simulation_bridge = SimulationBridge()
+health_manager = get_health_manager(settings)
+startup_initializer = StartupInitializer(settings)
+
+# Include unified architecture WebSocket routes
+app.include_router(websocket_router, prefix="/api")
 
 # Use our Jinja2-compatible templates
 templates = Jinja2Templates(directory="templates")
-# Mount static files from local static_dirs
+# Mount static files from local static_dirs and new JS files
 app.mount("/static", StaticFiles(directory="static_dirs"), name="static")
+app.mount("/static/js", StaticFiles(directory="static/js"), name="static_js")
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -57,6 +70,23 @@ async def landing(request: Request):
     except Exception as e:
         logger.error(f"Error loading landing page: {e}")
         raise HTTPException(status_code=500, detail="Failed to load landing page")
+
+@app.get("/dashboard", response_class=HTMLResponse)
+async def unified_dashboard(request: Request):
+    """Unified Architecture Dashboard (Epic 3 Frontend Integration)"""
+    try:
+        sim_state = await simulation_bridge.get_current_simulation_state()
+        
+        return templates.TemplateResponse(
+            "dashboard.html",
+            {
+                "request": request,
+                "simulation": sim_state
+            }
+        )
+    except Exception as e:
+        logger.error(f"Error loading unified dashboard: {e}")
+        raise HTTPException(status_code=500, detail="Failed to load unified dashboard")
 
 @app.get("/simulator_home", response_class=HTMLResponse)
 async def home(request: Request):
@@ -92,6 +122,67 @@ async def home(request: Request):
             "home/error_start_backend.html",
             {"request": request}
         )
+
+@app.get("/health")
+async def health_check():
+    """Comprehensive health check endpoint"""
+    return await health_manager.get_system_health()
+
+@app.get("/health/{check_name}")
+async def specific_health_check(check_name: str):
+    """Run a specific health check"""
+    result = await health_manager.run_check(check_name)
+    return {
+        "name": result.name,
+        "status": result.status.value,
+        "message": result.message,
+        "details": result.details,
+        "duration_ms": result.duration_ms,
+        "timestamp": result.timestamp.isoformat()
+    }
+
+@app.get("/health/files/movement/{sim_code}")
+async def check_movement_files(sim_code: str = "dating_show_25_agents"):
+    """Check status of movement files for a simulation"""
+    try:
+        missing_files = startup_initializer.movement_generator.get_missing_movement_files(sim_code)
+        
+        return {
+            "sim_code": sim_code,
+            "missing_files": missing_files,
+            "files_missing": len(missing_files),
+            "status": "healthy" if len(missing_files) == 0 else "degraded",
+            "message": f"{len(missing_files)} movement files missing" if missing_files else "All movement files present"
+        }
+    except Exception as e:
+        return {
+            "sim_code": sim_code,
+            "status": "error",
+            "error": str(e)
+        }
+
+@app.post("/admin/fix/movement/{sim_code}")
+async def fix_movement_files(sim_code: str = "dating_show_25_agents"):
+    """Administrative endpoint to fix missing movement files"""
+    try:
+        logger.info(f"Fixing movement files for {sim_code}")
+        success = await startup_initializer.movement_generator.generate_missing_files_for_simulation(sim_code)
+        
+        if success:
+            missing_files = startup_initializer.movement_generator.get_missing_movement_files(sim_code)
+            return {
+                "success": True,
+                "message": "Movement files generated successfully",
+                "remaining_missing": len(missing_files)
+            }
+        else:
+            return {
+                "success": False,
+                "message": "Failed to generate movement files"
+            }
+    except Exception as e:
+        logger.error(f"Error fixing movement files: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/simulation/state")
 async def get_simulation_state():
@@ -159,13 +250,22 @@ async def update_environment(request: Request):
     """Get movement updates for Phaser frontend"""
     try:
         data = await request.json()
-        step = data.get("step")
-        sim_code = data.get("sim_code")
+        step = data.get("step", 0)
+        sim_code = data.get("sim_code", "dating_show_25_agents")
+        
+        logger.debug(f"Environment update requested for step {step}, sim_code {sim_code}")
+        
+        # Ensure movement files exist for this step
+        try:
+            await startup_initializer._ensure_movement_files(sim_code)
+        except Exception as e:
+            logger.warning(f"Could not ensure movement files: {e}")
         
         # Get current simulation state
         sim_state = await simulation_bridge.get_current_simulation_state()
         
-        if not sim_state:
+        if not sim_state or not sim_state.agents:
+            logger.warning("No simulation state or agents found, returning empty response")
             return {"<step>": -1}
         
         # Build movement data in Django format
@@ -184,11 +284,13 @@ async def update_environment(request: Request):
                 }
             }
         
+        logger.debug(f"Returning movement data for {len(sim_state.agents)} agents")
         return movement_data
         
     except Exception as e:
         logger.error(f"Error updating environment: {e}")
-        return {"<step>": -1}
+        # Return error response with current step to prevent frontend hanging
+        return {"<step>": -1, "error": str(e)}
 
 # Additional Django-compatible routes
 @app.get("/demo/{sim_code}/{step}/{play_speed}/", response_class=HTMLResponse)
@@ -498,7 +600,32 @@ async def batch_update(request: Request):
 async def startup_event():
     """Initialize service on startup"""
     logger.info("Starting Dating Show Frontend Service")
-    await simulation_bridge.initialize()
+    
+    try:
+        # Initialize storage and required files first
+        logger.info("Initializing storage and required files...")
+        initialization_success = await startup_initializer.initialize_all()
+        
+        if initialization_success:
+            logger.info("✓ Storage initialization completed successfully")
+        else:
+            logger.warning("⚠ Storage initialization completed with warnings - attempting demo fallback")
+            # Try to initialize with demo data as fallback
+            demo_success = await startup_initializer.initialize_with_demo_data()
+            if demo_success:
+                logger.info("✓ Demo data initialization successful")
+            else:
+                logger.error("✗ Both standard and demo initialization failed")
+        
+        # Initialize simulation bridge
+        await simulation_bridge.initialize()
+        
+        logger.info("✓ Dating Show Frontend Service startup complete")
+        
+    except Exception as e:
+        logger.error(f"Error during startup: {e}")
+        # Continue startup even if initialization fails
+        logger.warning("Continuing startup despite initialization errors...")
 
 @app.on_event("shutdown")
 async def shutdown_event():

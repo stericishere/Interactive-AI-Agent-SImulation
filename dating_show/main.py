@@ -9,6 +9,7 @@ import logging
 import signal
 import sys
 import os
+import time
 print(sys.path)
 from pathlib import Path
 from typing import Optional, Dict, Any
@@ -16,6 +17,16 @@ import json
 import django
 from datetime import datetime
 import random
+
+# Load environment variables from .env file
+try:
+    from dotenv import load_dotenv
+    load_dotenv(Path(__file__).parent.parent / '.env')
+    print(f"🔑 [DEBUG] Loaded .env file, OPENROUTER_API_KEY present: {'OPENROUTER_API_KEY' in os.environ}")
+except ImportError:
+    print("⚠️ [DEBUG] python-dotenv not installed, .env file not loaded")
+except Exception as e:
+    print(f"⚠️ [DEBUG] Error loading .env file: {e}")
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
@@ -126,7 +137,11 @@ except Exception as e:
 
 
 class ReverieIntegrationManager:
-    """Manages integration between Reverie 25-agent simulation and dating show frontend"""
+    """DEPRECATED: Legacy Reverie integration - use UnifiedAgentManager instead
+    
+    This class is kept for backward compatibility but should not be used in new code.
+    The unified architecture provides superior data flow without lossy conversions.
+    """
     
     def __init__(self):
         self.reverie_server = None
@@ -173,42 +188,63 @@ class ReverieIntegrationManager:
         logger.info(f"Frontend sync: Updated curr_step.json to step {step}")
         
     def initialize_reverie_simulation(self, fork_sim_code: str = "base_the_ville_n25", 
-                                     sim_code: str = "dating_show_25_agents"):
-        """Initialize the 25-agent Smallville simulation"""
+                                     sim_code: str = "dating_show_8_agents"):
+        """Initialize the 8-agent dating show simulation"""
         if not REVERIE_AVAILABLE:
-            logger.error("Reverie not available, cannot initialize 25-agent simulation")
+            logger.error("Reverie not available, cannot initialize 8-agent simulation")
             return None
             
         try:
             # Create the required JSON files for frontend communication
-            self.create_temp_storage_files(sim_code, step=1)
+            self.create_temp_storage_files(sim_code, step=0)
             
             # Create reverie server instance
             logger.info(f"🏗️  Creating ReverieServer...")
             logger.info(f"Creating ReverieServer: forking from '{fork_sim_code}' -> '{sim_code}'")
             
-            # Handle existing simulation folder
-            import shutil
-            if LOCAL_REVERIE:
-                # For local reverie, check both dating_show_env and external paths
-                dating_show_sim_folder = project_root / "dating_show_env" / "frontend_service" / "storage" / sim_code
-                external_sim_folder = Path(fs_storage) / sim_code
-                
-                # Remove from both locations if they exist
-                if dating_show_sim_folder.exists():
-                    logger.info(f"Removing existing dating_show_env simulation folder: {dating_show_sim_folder}")
-                    shutil.rmtree(dating_show_sim_folder)
-                    
-                if external_sim_folder.exists():
-                    logger.info(f"Removing existing external simulation folder: {external_sim_folder}")
-                    shutil.rmtree(external_sim_folder)
-            else:
-                sim_folder = Path(fs_storage) / sim_code
-                if sim_folder.exists():
-                    logger.info(f"Removing existing simulation folder: {sim_folder}")
-                    shutil.rmtree(sim_folder)
+            # Debug: Check if target simulation already exists
+            sim_folder = Path(fs_storage) / sim_code
+            print(f"🔍 [DEBUG] Checking if target simulation exists: {sim_folder}")
+            print(f"🔍 [DEBUG] Exists: {sim_folder.exists()}")
+            if sim_folder.exists():
+                meta_path = sim_folder / "reverie" / "meta.json"
+                print(f"🔍 [DEBUG] Meta file exists: {meta_path.exists()}")
+                if meta_path.exists():
+                    import json
+                    with open(meta_path) as f:
+                        meta_data = json.load(f)
+                    print(f"🔍 [DEBUG] Persona count in meta.json: {len(meta_data.get('persona_names', []))}")
+                    print(f"🔍 [DEBUG] Persona names: {meta_data.get('persona_names', [])}")
             
-            self.reverie_server = ReverieServer(fork_sim_code, sim_code)
+            # Use existing 8-agent simulation
+            logger.info(f"🎯 [DEBUG] Using existing 8-agent simulation: {sim_code}")
+            
+            # Just load the existing simulation directly without forking
+            sim_folder = Path(fs_storage) / sim_code
+            if not sim_folder.exists():
+                logger.error(f"8-agent simulation not found at: {sim_folder}")
+                return None
+                
+            # Create ReverieServer by forking to same name (which will just load existing)
+            # We need to temporarily rename to allow "forking" 
+            temp_name = f"{sim_code}_temp"
+            temp_folder = Path(fs_storage) / temp_name
+            
+            # Clean up any temp folder from previous runs
+            if temp_folder.exists():
+                import shutil
+                shutil.rmtree(temp_folder)
+            
+            # Temporarily rename the target so ReverieServer can "fork" to it
+            sim_folder.rename(temp_folder)
+            
+            # Now fork from temp back to original name
+            self.reverie_server = ReverieServer(temp_name, sim_code)
+            
+            # Clean up temp folder
+            if temp_folder.exists():
+                import shutil
+                shutil.rmtree(temp_folder)
             
             logger.info("ReverieServer initialized successfully!")
             logger.info(f"Simulation contains {len(self.reverie_server.personas)} agents:")
@@ -417,6 +453,28 @@ class ReverieIntegrationManager:
             return {
                 'production_focus': ['drama', 'romance', 'logistics'][hash(persona_name) % 3]
             }
+    
+    def _create_8_agent_meta(self, sim_folder):
+        """Modify the simulation to only include 8 agents"""
+        try:
+            meta_path = sim_folder / "reverie" / "meta.json"
+            with open(meta_path, 'r') as f:
+                meta_data = json.load(f)
+            
+            # Select first 8 agents from the full list
+            all_agents = meta_data.get('persona_names', [])
+            selected_agents = all_agents[:8]  # Take first 8
+            
+            meta_data['persona_names'] = selected_agents
+            
+            with open(meta_path, 'w') as f:
+                json.dump(meta_data, f, indent=2)
+            
+            logger.info(f"Updated meta.json to include 8 agents: {selected_agents}")
+            
+        except Exception as e:
+            logger.error(f"Failed to create 8-agent meta: {e}")
+            # Continue anyway, it might still work
 
 
 class DatingShowMain:
@@ -696,21 +754,24 @@ class DatingShowMain:
     
     async def run_simulation_step(self):
         """Run a single simulation step and update JSON files with comprehensive error recovery"""
-        from .services.error_recovery import get_error_recovery, ErrorSeverity, safe_execute
+        from services.error_recovery import get_error_recovery, ErrorSeverity, safe_execute
         
         error_recovery = get_error_recovery()
         
         if self.reverie_server and self.reverie_manager:
             # Get current step before increment
             old_step = self.reverie_server.step
+            print(f"🎬 [DEBUG] Starting run_simulation_step for step {old_step}")
+            print(f"🎬 [DEBUG] Reverie server step: {self.reverie_server.step}")
+            print(f"🎬 [DEBUG] Reverie manager available: {self.reverie_manager is not None}")
             
             # Ensure environment files exist for current step
             def ensure_environment_files():
-                from .services.environment_generator import get_environment_generator
+                from services.environment_generator import get_environment_generator
                 env_generator = get_environment_generator()
                 
                 # Ensure files exist for current step
-                sim_code = "dating_show_25_agents"  # Use consistent simulation code
+                sim_code = "dating_show_8_agents"  # Use consistent simulation code
                 env_generator.ensure_step_files_exist(sim_code, old_step)
                 
                 # If this is a new simulation, initialize storage
@@ -726,16 +787,105 @@ class DatingShowMain:
                 'environment_generator', 
                 ensure_environment_files,
                 ErrorSeverity.MEDIUM,
-                {'step': old_step, 'sim_code': 'dating_show_25_agents'}
+                {'step': old_step, 'sim_code': 'dating_show_8_agents'}
             )
             
             if not env_success:
                 logger.warning("Environment file setup failed, continuing with degraded functionality")
             
+            # CRITICAL FIX: Generate NEXT step files BEFORE running reverie server
+            # The reverie server will block waiting for environment/{next_step}.json
+            # So we must ensure it exists before calling start_server()
+            next_step = old_step + 1
+            def pre_generate_next_step_files():
+                print(f"🎬 [DEBUG] PRE-GENERATING step {next_step} files BEFORE reverie server call")
+                from services.enhanced_step_manager import get_enhanced_step_manager
+                import asyncio
+                
+                step_manager = get_enhanced_step_manager()
+                
+                # Run sync generation using direct file creation to avoid async issues
+                def run_sync_generation():
+                    try:
+                        import json
+                        import os
+                        from pathlib import Path
+                        
+                        # Auto-detect correct storage path
+                        legacy_path = "/Applications/Projects/Open source/generative_agents/environment/frontend_server/storage"
+                        modern_path = "/Applications/Projects/Open source/generative_agents/dating_show_env/frontend_service/storage"
+                        
+                        storage_path = legacy_path
+                        if os.path.exists(os.path.join(legacy_path, "dating_show_8_agents")):
+                            storage_path = legacy_path
+                            print(f"🎯 [DEBUG] Using legacy storage path: {storage_path}")
+                        elif os.path.exists(os.path.join(modern_path, "dating_show_8_agents")):
+                            storage_path = modern_path
+                            print(f"🎯 [DEBUG] Using modern storage path: {storage_path}")
+                        
+                        # Create step files directly
+                        sim_path = Path(storage_path) / "dating_show_8_agents"
+                        env_file = sim_path / "environment" / f"{next_step}.json"
+                        mov_file = sim_path / "movement" / f"{next_step}.json"
+                        
+                        # Ensure directories exist
+                        env_file.parent.mkdir(parents=True, exist_ok=True)
+                        mov_file.parent.mkdir(parents=True, exist_ok=True)
+                        
+                        # Read previous step as template if available
+                        prev_env_file = sim_path / "environment" / f"{next_step-1}.json"
+                        prev_mov_file = sim_path / "movement" / f"{next_step-1}.json"
+                        
+                        if prev_env_file.exists() and prev_mov_file.exists():
+                            # Copy and modify previous step
+                            with open(prev_env_file, 'r') as f:
+                                env_data = json.load(f)
+                            with open(prev_mov_file, 'r') as f:
+                                mov_data = json.load(f)
+                            
+                            # Update step info
+                            if "meta" in env_data:
+                                env_data["meta"]["step"] = next_step
+                            if "meta" in mov_data:
+                                mov_data["meta"]["step"] = next_step
+                            
+                            # Write files
+                            with open(env_file, 'w') as f:
+                                json.dump(env_data, f, indent=2)
+                            with open(mov_file, 'w') as f:
+                                json.dump(mov_data, f, indent=2)
+                                
+                            print(f"✅ [DEBUG] Created step {next_step} files from previous step")
+                            return True
+                        else:
+                            print(f"⚠️ [DEBUG] Previous step {next_step-1} files not found, will skip pre-generation")
+                            return False
+                            
+                    except Exception as e:
+                        print(f"🚨 [DEBUG] Pre-generation error: {e}")
+                        return False
+                
+                return run_sync_generation()
+            
+            # Safe execution of pre-generation
+            pre_gen_success, _ = safe_execute(
+                'step_file_pre_generation',
+                pre_generate_next_step_files,
+                ErrorSeverity.HIGH,
+                {'next_step': next_step}
+            )
+            
+            if not pre_gen_success:
+                logger.error(f"Failed to pre-generate step {next_step} files - reverie server will block!")
+            else:
+                logger.info(f"✅ Pre-generated step {next_step} files successfully")
+            
             # Run actual reverie simulation step
             def run_reverie_step():
+                print(f"🎬 [DEBUG] About to call start_server(1) - current step: {self.reverie_server.step}")
                 # Use the actual reverie simulation logic to run one step
                 self.reverie_server.start_server(1)
+                print(f"🎬 [DEBUG] start_server(1) completed - new step: {self.reverie_server.step}")
                 logger.info(f"Executed reverie simulation step for step {self.reverie_server.step}")
                 return True
             
@@ -751,22 +901,98 @@ class DatingShowMain:
                 logger.error("Reverie simulation step failed, using fallback increment")
                 self.reverie_server.step += 1
             
-            # Generate environment files for the new step
+            # Generate environment files for the new step using enhanced step manager
             def generate_new_step_files():
-                from .services.environment_generator import get_environment_generator
-                env_generator = get_environment_generator()
+                from services.enhanced_step_manager import get_enhanced_step_manager
+                import asyncio
                 
                 new_step = self.reverie_server.step
-                agent_states = {}
+                print(f"🎬 [DEBUG] Starting generate_new_step_files for step {new_step}")
+                logger.info(f"🔧 Generating enhanced step files for step {new_step}")
                 
-                # Collect current agent states
-                for persona in self.reverie_server.personas.values():
-                    agent_states[persona.name] = persona
+                # Get enhanced step manager
+                step_manager = get_enhanced_step_manager()
+                print(f"🎬 [DEBUG] Got enhanced step manager: {step_manager}")
                 
-                # Generate files for the new step
-                env_generator.generate_next_step_files("dating_show_25_agents", new_step, agent_states)
-                logger.info(f"Generated environment files for step {new_step}")
-                return True
+                # Use direct file creation to avoid async issues
+                def create_step_files_directly():
+                    try:
+                        import json
+                        import os
+                        from pathlib import Path
+                        
+                        # Auto-detect correct storage path
+                        legacy_path = "/Applications/Projects/Open source/generative_agents/environment/frontend_server/storage"
+                        modern_path = "/Applications/Projects/Open source/generative_agents/dating_show_env/frontend_service/storage"
+                        
+                        storage_path = legacy_path
+                        if os.path.exists(os.path.join(legacy_path, "dating_show_8_agents")):
+                            storage_path = legacy_path
+                            print(f"🎯 [DEBUG] Using legacy storage path: {storage_path}")
+                        elif os.path.exists(os.path.join(modern_path, "dating_show_8_agents")):
+                            storage_path = modern_path
+                            print(f"🎯 [DEBUG] Using modern storage path: {storage_path}")
+                        
+                        # Create step files directly
+                        sim_path = Path(storage_path) / "dating_show_8_agents"
+                        env_file = sim_path / "environment" / f"{new_step}.json"
+                        mov_file = sim_path / "movement" / f"{new_step}.json"
+                        
+                        # Skip if files already exist
+                        if env_file.exists() and mov_file.exists():
+                            print(f"✅ [DEBUG] Step {new_step} files already exist")
+                            return True
+                        
+                        # Ensure directories exist
+                        env_file.parent.mkdir(parents=True, exist_ok=True)
+                        mov_file.parent.mkdir(parents=True, exist_ok=True)
+                        
+                        # Read previous step as template if available
+                        prev_env_file = sim_path / "environment" / f"{new_step-1}.json"
+                        prev_mov_file = sim_path / "movement" / f"{new_step-1}.json"
+                        
+                        if prev_env_file.exists() and prev_mov_file.exists():
+                            # Copy and modify previous step
+                            with open(prev_env_file, 'r') as f:
+                                env_data = json.load(f)
+                            with open(prev_mov_file, 'r') as f:
+                                mov_data = json.load(f)
+                            
+                            # Update step info
+                            if "meta" in env_data:
+                                env_data["meta"]["step"] = new_step
+                            if "meta" in mov_data:
+                                mov_data["meta"]["step"] = new_step
+                            
+                            # Write files
+                            with open(env_file, 'w') as f:
+                                json.dump(env_data, f, indent=2)
+                            with open(mov_file, 'w') as f:
+                                json.dump(mov_data, f, indent=2)
+                                
+                            print(f"✅ [DEBUG] Created step {new_step} files from previous step")
+                            return True
+                        else:
+                            print(f"⚠️ [DEBUG] Previous step {new_step-1} files not found, cannot create step {new_step}")
+                            return False
+                            
+                    except Exception as e:
+                        print(f"🚨 [DEBUG] Direct file creation error: {e}")
+                        return False
+                
+                print(f"🎬 [DEBUG] Creating step files directly")
+                success = create_step_files_directly()
+                print(f"🎬 [DEBUG] Direct file creation returned: {success}")
+                
+                if success:
+                    print(f"✅ [DEBUG] Enhanced step files generated successfully for step {new_step}")
+                    logger.info(f"✅ Enhanced step files generated for step {new_step}")
+                else:
+                    print(f"⚠️ [DEBUG] Enhanced step file generation had issues for step {new_step}")
+                    logger.warning(f"⚠️ Enhanced step file generation had issues for step {new_step}")
+                
+                print(f"🎬 [DEBUG] generate_new_step_files returning: {success}")
+                return success
             
             # Safe execution of new step file generation
             file_gen_success, _ = safe_execute(
@@ -820,13 +1046,12 @@ class DatingShowMain:
     
     def run_interactive_mode(self):
         """Run in interactive mode with step-by-step control"""
-        import time
         
         print("=" * 50)
         print(f"Local reverie core available: {'✅' if LOCAL_REVERIE else '❌'}")
         print("🎭 Standalone Dating Show Simulation")
         print("   Fork from: base_the_ville_n25")
-        print("   New sim: dating_show_25_agents")
+        print("   New sim: dating_show_8_agents (8 contestants)")
         
         # Initialize simulation
         if not self._initialize_interactive_simulation():
@@ -923,7 +1148,6 @@ class DatingShowMain:
     
     def _run_interactive_auto(self, steps: int):
         """Run auto simulation in interactive mode"""
-        import time
         
         print(f"🎬 Starting auto-simulation for {steps} steps...")
         print(f"⏱️  Step delay: 1.0s")
@@ -964,7 +1188,7 @@ class DatingShowMain:
             print(f"📊 Simulation Status:")
             print(f"   Current step: {self.reverie_server.step}")
             print(f"   Agents: {len(self.reverie_server.personas)}")
-            print(f"   Simulation code: dating_show_25_agents")
+            print(f"   Simulation code: dating_show_8_agents (8 contestants)")
             print(f"   Local reverie: {'✅' if LOCAL_REVERIE else '❌'}")
         else:
             print("❌ No simulation running")
@@ -982,7 +1206,11 @@ class DatingShowMain:
             print("❌ No simulation to save")
     
     def _run_enhanced_simulation_step(self) -> bool:
-        """Run enhanced simulation step with persona movement and dating show behaviors"""
+        """DEPRECATED: Use UnifiedAgentManager with UpdatePipeline instead
+        
+        This method contains duplicate logic that's better handled by
+        the unified architecture's real-time update system.
+        """
         if not self.reverie_server:
             return False
             
@@ -990,10 +1218,89 @@ class DatingShowMain:
             # Get current step before running reverie simulation
             old_step = self.reverie_server.step
             
+            # CRITICAL FIX: Pre-generate next step files to prevent blocking
+            next_step = old_step + 1
+            print(f"🎬 [DEBUG] Pre-generating step {next_step} files before reverie server call")
+            
+            from services.enhanced_step_manager import get_enhanced_step_manager
+            import asyncio
+            
+            step_manager = get_enhanced_step_manager()
+            
+            # Pre-generate next step files synchronously using direct file creation
+            def run_sync_generation():
+                try:
+                    # Use direct file creation to avoid async issues
+                    import json
+                    import os
+                    from pathlib import Path
+                    
+                    # Auto-detect correct storage path
+                    legacy_path = "/Applications/Projects/Open source/generative_agents/environment/frontend_server/storage"
+                    modern_path = "/Applications/Projects/Open source/generative_agents/dating_show_env/frontend_service/storage"
+                    
+                    storage_path = legacy_path
+                    if os.path.exists(os.path.join(legacy_path, "dating_show_8_agents")):
+                        storage_path = legacy_path
+                        print(f"🎯 [DEBUG] Using legacy storage path: {storage_path}")
+                    elif os.path.exists(os.path.join(modern_path, "dating_show_8_agents")):
+                        storage_path = modern_path
+                        print(f"🎯 [DEBUG] Using modern storage path: {storage_path}")
+                    
+                    # Create step files directly
+                    sim_path = Path(storage_path) / "dating_show_8_agents"
+                    env_file = sim_path / "environment" / f"{next_step}.json"
+                    mov_file = sim_path / "movement" / f"{next_step}.json"
+                    
+                    # Ensure directories exist
+                    env_file.parent.mkdir(parents=True, exist_ok=True)
+                    mov_file.parent.mkdir(parents=True, exist_ok=True)
+                    
+                    # Read previous step as template if available
+                    prev_env_file = sim_path / "environment" / f"{next_step-1}.json"
+                    prev_mov_file = sim_path / "movement" / f"{next_step-1}.json"
+                    
+                    if prev_env_file.exists() and prev_mov_file.exists():
+                        # Copy and modify previous step
+                        with open(prev_env_file, 'r') as f:
+                            env_data = json.load(f)
+                        with open(prev_mov_file, 'r') as f:
+                            mov_data = json.load(f)
+                        
+                        # Update step info
+                        if "meta" in env_data:
+                            env_data["meta"]["step"] = next_step
+                        if "meta" in mov_data:
+                            mov_data["meta"]["step"] = next_step
+                        
+                        # Write files
+                        with open(env_file, 'w') as f:
+                            json.dump(env_data, f, indent=2)
+                        with open(mov_file, 'w') as f:
+                            json.dump(mov_data, f, indent=2)
+                            
+                        print(f"✅ [DEBUG] Created step {next_step} files from previous step")
+                        return True
+                    else:
+                        print(f"⚠️ [DEBUG] Previous step {next_step-1} files not found, skipping pre-generation")
+                        return False
+                        
+                except Exception as e:
+                    print(f"🚨 [DEBUG] Pre-generation error: {e}")
+                    return False
+            
+            pre_gen_success = run_sync_generation()
+            if not pre_gen_success:
+                logger.warning(f"Failed to pre-generate step {next_step} files")
+            else:
+                print(f"✅ [DEBUG] Step {next_step} files ready for reverie server")
+            
             # Run actual reverie simulation step
             try:
+                print(f"🎬 [DEBUG] Calling start_server(1) - current step: {old_step}")
                 # Use the actual reverie simulation logic to run one step
                 self.reverie_server.start_server(1)
+                print(f"🎬 [DEBUG] start_server(1) completed - new step: {self.reverie_server.step}")
                 logger.info(f"Executed reverie simulation step for step {self.reverie_server.step}")
             except Exception as e:
                 logger.error(f"Error running simulation step: {e}")
@@ -1118,7 +1425,7 @@ class DatingShowMain:
             logger.warning(f"Error updating enhanced agent {agent_id} from simulation: {e}")
     
     def _get_emotion_changes_for_action(self, action_desc: str, 
-                                       enhanced_manager: EnhancedAgentStateManager) -> Dict[str, float]:
+                                       enhanced_manager: EnhancedAgentStateManager = None) -> Dict[str, float]:
         """Get emotional changes based on action description"""
         action_lower = action_desc.lower()
         changes = {}
@@ -1521,7 +1828,11 @@ class DatingShowMain:
     
     def _extract_enhanced_agent_data(self, enhanced_manager: EnhancedAgentStateManager, 
                                    agent_id: str) -> Dict[str, Any]:
-        """Extract comprehensive agent data from enhanced state manager"""
+        """DEPRECATED: Use FrontendStateAdapter.convert() instead
+        
+        This method is redundant with the new unified architecture.
+        FrontendStateAdapter provides zero-loss conversion with better performance.
+        """
         try:
             state = enhanced_manager.state
             
@@ -1729,7 +2040,7 @@ Examples:
             '--frontend-url',
             type=str,
             default='http://localhost:8001',
-            help='Frontend server URL (default: http://localhost:8000)'
+            help='Frontend server URL (default: http://localhost:8001)'
         )
         
         parser.add_argument(

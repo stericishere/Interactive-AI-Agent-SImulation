@@ -75,7 +75,7 @@ class EnhancedFrontendBridge(FrontendBridge):
     - Performance optimization
     """
     
-    def __init__(self, frontend_url: str = "http://localhost:8000", 
+    def __init__(self, frontend_url: str = "http://localhost:8001", 
                  update_interval: float = 1.0, **kwargs):
         """Initialize enhanced bridge with additional capabilities"""
         super().__init__(frontend_url, update_interval)
@@ -484,7 +484,7 @@ class EnhancedFrontendBridge(FrontendBridge):
 
 
 # Factory function for creating enhanced bridge
-def create_enhanced_bridge(frontend_url: str = "http://localhost:8000", **kwargs) -> EnhancedFrontendBridge:
+def create_enhanced_bridge(frontend_url: str = "http://localhost:8001", **kwargs) -> EnhancedFrontendBridge:
     """
     Create and configure enhanced frontend bridge.
     

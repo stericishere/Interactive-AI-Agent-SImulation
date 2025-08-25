@@ -1,0 +1,204 @@
+# Enhanced Step File Generation Configuration
+# Configures hybrid generation strategy and simulation orchestration
+
+# Step Generation Strategy Configuration
+step_generation:
+  # Strategy: reactive (wait for files), proactive (auto-generate), hybrid (both)
+  strategy: "hybrid"
+  
+  # Enable fallback mechanisms when primary strategy fails
+  fallback_enabled: true
+  
+  # Cache templates for improved performance
+  cache_templates: true
+  
+  # Maximum retries for file generation
+  max_retries: 3
+  
+  # Timeout for generation operations (seconds)
+  generation_timeout: 30.0
+  
+  # Order to try generation strategies
+  generation_order:
+    - "previous_step"      # Use previous step as template
+    - "base_simulation"    # Use base simulation template
+    - "minimal_fallback"   # Create minimal viable files
+  
+  # Proactive generation settings
+  proactive:
+    # Pre-generate next N steps
+    lookahead_steps: 2
+    
+    # Generate files in background
+    background_generation: true
+    
+    # Minimum time between background generations (seconds)
+    background_interval: 10.0
+
+# Dating Show Context Configuration
+dating_show:
+  # Apply dating show specific enhancements
+  context_enhancement: true
+  
+  # Pool of emojis for agent expressions
+  emoji_pool:
+    - "💕" # Love
+    - "🌹" # Romance
+    - "💬" # Chat
+    - "😊" # Happy
+    - "🥰" # Affectionate
+    - "💭" # Thinking
+    - "✨" # Sparkle
+    - "🌟" # Star
+    - "💃" # Dancing
+    - "🎭" # Drama
+    - "🔥" # Fire/Passion
+    - "🌺" # Tropical
+    - "📚" # Learning
+    - "🎵" # Music
+    - "🍃" # Nature
+    - "⚡" # Energy
+    - "🎮" # Gaming
+    - "🌸" # Blossom
+    - "🛠️" # Working
+    - "🎬" # Entertainment
+  
+  # Villa activities for agent descriptions
+  villa_activities:
+    - "socializing with other contestants"
+    - "exploring the villa grounds"
+    - "having conversations by the pool"
+    - "preparing for the next challenge"
+    - "reflecting on romantic connections"
+    - "enjoying villa amenities"
+    - "building relationships with housemates"
+    - "working out in the gym"
+    - "cooking together in the kitchen"
+    - "planning group events"
+    - "sharing stories and experiences"
+    - "relaxing in the lounge area"
+    - "getting ready for dates"
+    - "participating in villa games"
+    - "having heart-to-heart conversations"
+  
+  # Position evolution settings
+  position_evolution:
+    # Enable small position changes between steps
+    enabled: true
+    
+    # Maximum movement per step (tiles)
+    max_movement: 5
+    
+    # Villa boundaries
+    boundaries:
+      min_x: 15
+      max_x: 90
+      min_y: 15
+      max_y: 75
+    
+    # Probability of activity description update
+    description_update_chance: 0.3
+
+# Storage Configuration
+storage:
+  # Primary storage path for dating_show simulations
+  primary_path: "/Applications/Projects/Open source/generative_agents/dating_show_env/frontend_service/storage"
+  
+  # Backup storage path (legacy environment system)
+  backup_path: "/Applications/Projects/Open source/generative_agents/environment/frontend_server/storage"
+  
+  # Temporary storage for current state
+  temp_storage: "/Applications/Projects/Open source/generative_agents/dating_show_env/frontend_service/temp_storage"
+  
+  # File patterns
+  patterns:
+    environment: "environment/{step}.json"
+    movement: "movement/{step}.json"
+    meta: "reverie/meta.json"
+
+# Real-time Update Configuration
+real_time:
+  # Enable WebSocket broadcasting
+  websocket_enabled: true
+  
+  # Broadcast step updates to connected clients
+  broadcast_step_updates: true
+  
+  # Update pipeline service
+  update_pipeline: "dating_show.services.update_pipeline"
+  
+  # Batch update settings
+  batch_updates:
+    enabled: true
+    batch_size: 10
+    flush_interval: 5.0
+
+# Agent Processing Configuration
+agent_processing:
+  # Enable enhanced agent processing
+  enhanced_processing: true
+  
+  # Concurrent agent processing
+  concurrent_processing: true
+  
+  # Maximum concurrent agents
+  max_concurrent_agents: 25
+  
+  # Agent processing timeout (seconds)
+  processing_timeout: 60.0
+
+# Error Handling Configuration
+error_handling:
+  # Enable graceful degradation
+  graceful_degradation: true
+  
+  # Retry failed operations
+  retry_failed_operations: true
+  
+  # Log detailed error information
+  detailed_logging: true
+  
+  # Fallback to minimal files on critical failure
+  minimal_fallback: true
+
+# Performance Configuration
+performance:
+  # Enable async operations
+  async_operations: true
+  
+  # Thread pool size for I/O operations
+  thread_pool_size: 4
+  
+  # Cache size for template data
+  template_cache_size: 100
+  
+  # Enable compression for large files
+  file_compression: false
+
+# Development/Debug Configuration
+debug:
+  # Enable debug logging
+  debug_logging: false
+  
+  # Log generation strategies used
+  log_strategies: true
+  
+  # Log execution times
+  log_timing: true
+  
+  # Save generation reports
+  save_reports: false
+  
+  # Report directory
+  report_directory: "./logs/generation_reports"
+
+# Compatibility Configuration
+compatibility:
+  # Support legacy environment system
+  legacy_support: true
+  
+  # Auto-migrate from legacy storage
+  auto_migration: false
+  
+  # Maintain backward compatibility
+  backward_compatible: true

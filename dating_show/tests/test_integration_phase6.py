@@ -131,7 +131,7 @@ class TestEnhancedFrontendBridge(unittest.TestCase):
     def setUp(self):
         """Set up test environment"""
         self.bridge = create_enhanced_bridge(
-            frontend_url="http://localhost:8000",
+            frontend_url="http://localhost:8001",
             update_interval=0.1,
             batch_size=5
         )
@@ -143,7 +143,7 @@ class TestEnhancedFrontendBridge(unittest.TestCase):
     
     def test_enhanced_bridge_initialization(self):
         """Test enhanced bridge initialization"""
-        self.assertEqual(self.bridge.frontend_url, "http://localhost:8000")
+        self.assertEqual(self.bridge.frontend_url, "http://localhost:8001")
         self.assertEqual(self.bridge.batch_size, 5)
         self.assertEqual(self.bridge.health_metrics.status, BridgeStatus.INITIALIZING)
         self.assertIsInstance(self.bridge.discovered_agents, set)
@@ -241,7 +241,7 @@ class TestOrchestrationService(unittest.TestCase):
         self.config = OrchestrationConfig(
             database_url="sqlite:///test.db",
             frontend_server_path=self.temp_dir,
-            frontend_url="http://localhost:8000",
+            frontend_url="http://localhost:8001",
             max_agents=5,
             simulation_steps=10
         )

@@ -1,0 +1,123 @@
+{
+  "villa_areas": {
+    "(16, 18)": {
+      "area_name": "Master Bedroom Suite",
+      "description": "Luxurious master bedroom with king bed, private balcony overlooking the pool",
+      "atmosphere": "intimate, romantic, private",
+      "features": ["king-size bed", "private balcony", "ensuite bathroom", "walk-in closet"],
+      "strategic_value": "perfect for deep conversations and romantic moments",
+      "nearby_areas": ["Pool Deck", "Main Villa Hallway"],
+      "activity_suggestions": ["intimate conversations", "romantic moments", "private confessional talks", "getting ready together"]
+    },
+    "(26, 18)": {
+      "area_name": "Guest Bedroom",
+      "description": "Cozy guest bedroom with double bed and garden view",
+      "atmosphere": "comfortable, private, contemplative",
+      "features": ["double bed", "garden view window", "shared bathroom access", "built-in desk"],
+      "strategic_value": "ideal for one-on-one strategic discussions away from crowds",
+      "nearby_areas": ["Garden Terrace", "Main Villa Hallway"],
+      "activity_suggestions": ["strategic planning", "private chats", "quiet reflection", "getting dressed up"]
+    },
+    "(36, 18)": {
+      "area_name": "Pool Deck",
+      "description": "Stunning infinity pool with panoramic sunset views and lounge chairs",
+      "atmosphere": "relaxed, social, photogenic",
+      "features": ["infinity pool", "sun loungers", "poolside bar", "sunset views"],
+      "strategic_value": "prime location for showing off and creating jealousy",
+      "nearby_areas": ["Hot Tub Area", "Pool Bar", "Master Bedroom Suite"],
+      "activity_suggestions": ["sunbathing", "swimming", "poolside flirting", "group socializing", "dramatic conversations"]
+    },
+    "(16, 32)": {
+      "area_name": "Villa Kitchen",
+      "description": "Gourmet kitchen with marble countertops and breakfast bar",
+      "atmosphere": "warm, communal, domestic",
+      "features": ["marble countertops", "breakfast bar", "professional appliances", "wine fridge"],
+      "strategic_value": "creates intimate domestic moments and sharing opportunities",
+      "nearby_areas": ["Dining Area", "Living Room", "Pantry"],
+      "activity_suggestions": ["cooking together", "morning coffee dates", "late-night snacks", "heart-to-heart talks"]
+    },
+    "(26, 32)": {
+      "area_name": "Living Room",
+      "description": "Open-concept living space with panoramic windows and fireplace",
+      "atmosphere": "comfortable, social, central",
+      "features": ["panoramic windows", "fireplace", "sectional sofas", "entertainment center"],
+      "strategic_value": "central hub for group dynamics and alliance building",
+      "nearby_areas": ["Kitchen", "Dining Area", "Main Entrance", "Terrace"],
+      "activity_suggestions": ["group conversations", "game nights", "morning coffee", "alliance discussions"]
+    },
+    "(53, 14)": {
+      "area_name": "Study Room",
+      "description": "Quiet library-style room with leather chairs and bookshelves",
+      "atmosphere": "intellectual, intimate, sophisticated",
+      "features": ["leather armchairs", "floor-to-ceiling bookshelves", "reading lamps", "chess set"],
+      "strategic_value": "perfect for intellectual connections and deep conversations",
+      "nearby_areas": ["Wine Cellar", "Main Hallway", "Garden Path"],
+      "activity_suggestions": ["deep philosophical talks", "intimate reading together", "strategic game playing", "quiet bonding"]
+    },
+    "(58, 9)": {
+      "area_name": "Hot Tub Terrace",
+      "description": "Secluded hot tub area surrounded by tropical plants and fairy lights",
+      "atmosphere": "romantic, secluded, sensual",
+      "features": ["jacuzzi hot tub", "tropical landscaping", "fairy lights", "privacy screens"],
+      "strategic_value": "ultimate romantic setting for eliminating competition",
+      "nearby_areas": ["Pool Deck", "Garden Path", "Outdoor Shower"],
+      "activity_suggestions": ["romantic soaks", "intimate conversations", "stargazing", "steamy encounters"]
+    },
+    "(42, 25)": {
+      "area_name": "Garden Terrace",
+      "description": "Beautiful outdoor terrace with dining table and hanging garden",
+      "atmosphere": "romantic, natural, peaceful",
+      "features": ["outdoor dining table", "hanging plants", "string lights", "herb garden"],
+      "strategic_value": "perfect for romantic dinners and meaningful conversations",
+      "nearby_areas": ["Kitchen", "Living Room", "Guest Bedroom"],
+      "activity_suggestions": ["romantic dinners", "morning yoga", "sunset talks", "herb picking together"]
+    },
+    "(35, 45)": {
+      "area_name": "Fire Pit Area",
+      "description": "Cozy stone fire pit surrounded by comfortable seating",
+      "atmosphere": "warm, communal, dramatic",
+      "features": ["stone fire pit", "circular seating", "s'mores station", "blanket storage"],
+      "strategic_value": "creates bonding opportunities and dramatic confessions",
+      "nearby_areas": ["Beach Access", "Outdoor Bar", "Game Area"],
+      "activity_suggestions": ["evening storytelling", "making s'mores", "group bonding", "confession time"]
+    },
+    "(48, 38)": {
+      "area_name": "Outdoor Bar",
+      "description": "Tiki-style outdoor bar with tropical cocktails and beach views",
+      "atmosphere": "fun, social, party-like",
+      "features": ["tiki bar", "cocktail station", "bar stools", "beach views"],
+      "strategic_value": "liquid courage location for bold moves and confrontations",
+      "nearby_areas": ["Fire Pit Area", "Pool Deck", "Beach Access"],
+      "activity_suggestions": ["cocktail mixing", "truth-telling games", "liquid courage conversations", "flirty bartending"]
+    },
+    "(22, 8)": {
+      "area_name": "Wine Cellar",
+      "description": "Sophisticated underground wine cellar with tasting area",
+      "atmosphere": "sophisticated, intimate, exclusive",
+      "features": ["wine collection", "tasting table", "dim lighting", "private entrance"],
+      "strategic_value": "exclusive setting for VIP-level romantic connections",
+      "nearby_areas": ["Study Room", "Main Villa", "Storage Area"],
+      "activity_suggestions": ["wine tasting", "sophisticated conversations", "private toasts", "exclusive moments"]
+    },
+    "(60, 35)": {
+      "area_name": "Confessional Room",
+      "description": "Private booth for intimate camera interviews and personal reflections",
+      "atmosphere": "private, honest, revealing",
+      "features": ["comfortable chair", "professional lighting", "camera setup", "soundproofing"],
+      "strategic_value": "strategic location for narrative control and audience manipulation",
+      "nearby_areas": ["Production Area", "Main Villa", "Private Path"],
+      "activity_suggestions": ["honest confessionals", "strategic interviews", "emotional processing", "game planning"]
+    }
+  },
+  "default_areas": {
+    "villa_general": {
+      "area_name": "Villa Common Area",
+      "description": "General villa space with comfortable furnishings",
+      "atmosphere": "welcoming, social, comfortable",
+      "features": ["comfortable seating", "good lighting", "social spaces"],
+      "strategic_value": "neutral territory for various interactions",
+      "nearby_areas": ["Multiple villa areas"],
+      "activity_suggestions": ["socializing", "casual conversations", "group activities", "relaxing"]
+    }
+  }
+}

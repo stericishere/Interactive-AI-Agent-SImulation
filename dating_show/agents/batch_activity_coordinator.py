@@ -9,6 +9,7 @@ import json
 import requests
 import time
 from typing import List, Dict, Any
+from openai import OpenAI
 
 # Add path for prompt template access
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
@@ -27,8 +28,9 @@ class BatchActivityCoordinator:
         self.activity_cache = {}
         self.last_batch_time = None
         
-        # Load API key
+        # Load API key and initialize OpenAI client
         self.openrouter_api_key = self._load_api_key()
+        self.client = self._initialize_openai_client()
     
     def _load_api_key(self):
         """Load OpenRouter API key from environment"""
@@ -39,6 +41,18 @@ class BatchActivityCoordinator:
                     if line.startswith('OPENROUTER_API_KEY='):
                         return line.split('=', 1)[1].strip()
         return None
+    
+    def _initialize_openai_client(self):
+        """Initialize OpenAI client for OpenRouter"""
+        if not self.openrouter_api_key:
+            print("⚠️ [BATCH] No OpenRouter API key found")
+            return None
+            
+        client = OpenAI(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=self.openrouter_api_key,
+        )
+        return client
     
     def generate_batch_activities(self, personas_data: List[Dict[str, Any]], curr_time, shared_context: Dict[str, Any] = None) -> Dict[str, str]:
         """
@@ -108,50 +122,41 @@ class BatchActivityCoordinator:
             return self._fallback_activities(personas_data)
     
     def _make_batch_api_call(self, prompt: str) -> str:
-        """Make the actual API call for batch processing"""
+        """Make the actual API call for batch processing using OpenAI client"""
         try:
-            headers = {
-                "Authorization": f"Bearer {self.openrouter_api_key}",
-                "Content-Type": "application/json",
-                "HTTP-Referer": "https://github.com/generative-agents/dating-show",
-                "X-Title": "Dating Show Simulation - Batch Processing"
-            }
-            
-            data = {
-                "model": "deepseek/deepseek-chat-v3-0324:free",
-                "messages": [{"role": "user", "content": prompt}],
-                "temperature": 0.8,
-                "max_tokens": 400  # More tokens for batch response
-            }
+            if not self.client:
+                print("🚨 [BATCH] No OpenAI client initialized")
+                return None
             
             print(f"🌐 [BATCH] Making batch API call...")
             
-            response = requests.post(
-                "https://openrouter.ai/api/v1/chat/completions",
-                headers=headers,
-                json=data,
-                timeout=30  # Longer timeout for batch processing
+            completion = self.client.chat.completions.create(
+                extra_headers={
+                    "HTTP-Referer": "https://github.com/generative-agents/dating-show",
+                    "X-Title": "Dating Show Simulation - Batch Processing",
+                },
+                extra_body={},
+                model="deepseek/deepseek-chat-v3-0324:free",
+                messages=[
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ],
+                temperature=0.8,
+                max_tokens=400  # More tokens for batch response
             )
             
-            if response.status_code == 429:
+            response_content = completion.choices[0].message.content
+            print(f"✅ [BATCH] API call successful")
+            return response_content
+                
+        except Exception as e:
+            print(f"🚨 [BATCH] API call failed: {e}")
+            # Check if it's a rate limit error
+            if "429" in str(e) or "rate limit" in str(e).lower():
                 print(f"🚦 [BATCH] Rate limited, waiting 5s...")
                 time.sleep(5)
-                return None
-            elif response.status_code == 401:
-                print(f"🚨 [BATCH] 401 Unauthorized - API key invalid")
-                return None
-            
-            response.raise_for_status()
-            result = response.json()
-            
-            if result and 'choices' in result and result['choices']:
-                return result['choices'][0]['message']['content'].strip()
-            else:
-                print("⚠️ [BATCH] Empty API response")
-                return None
-                
-        except requests.exceptions.RequestException as e:
-            print(f"🚨 [BATCH] API request failed: {e}")
             return None
         except Exception as e:
             print(f"🚨 [BATCH] Unexpected error in API call: {e}")

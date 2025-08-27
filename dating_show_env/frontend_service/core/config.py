@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     
     # Dating show integration
     dating_show_backend_url: str = os.getenv('DATING_SHOW_BACKEND_URL', "http://localhost:8001")
-    simulation_data_path: str = os.getenv('SIMULATION_DATA_PATH', "../../environment/frontend_server")
+    simulation_data_path: str = os.getenv('SIMULATION_DATA_PATH', ".")
     
     # Performance settings (production optimized)
     max_connections: int = int(os.getenv('MAX_CONNECTIONS', 500 if os.getenv('DATING_SHOW_ENV') == 'production' else 100))

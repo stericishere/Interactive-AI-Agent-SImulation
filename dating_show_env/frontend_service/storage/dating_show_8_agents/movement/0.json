@@ -3,77 +3,77 @@
     "Latoya Williams": {
       "movement": [
         16,
-        18
+        19
       ],
       "pronunciatio": "\ud83c\udf39",
-      "description": "sharing stories with housemates",
-      "chat": null
+      "description": "Latoya Williams is  @ villa",
+      "chat": ""
     },
     "Rajiv Patel": {
       "movement": [
-        73,
-        74
+        28,
+        19
       ],
-      "pronunciatio": "\ud83c\udfb5",
-      "description": "relaxing in the lounge",
-      "chat": null
+      "pronunciatio": "\ud83d\udcad",
+      "description": "Rajiv Patel is  @ villa",
+      "chat": ""
     },
     "Abigail Chen": {
       "movement": [
-        93,
-        74
-      ],
-      "pronunciatio": "\ud83c\udfac",
-      "description": "reflecting on relationships",
-      "chat": null
-    },
-    "Francisco Lopez": {
-      "movement": [
         36,
-        32
-      ],
-      "pronunciatio": "\ud83c\udf73",
-      "description": "working out in the gym",
-      "chat": null
-    },
-    "Hailey Johnson": {
-      "movement": [
-        86,
         18
       ],
       "pronunciatio": "\ud83d\udd25",
-      "description": "reflecting on relationships",
-      "chat": null
+      "description": "Abigail Chen is  @ villa",
+      "chat": ""
+    },
+    "Francisco Lopez": {
+      "movement": [
+        16,
+        30
+      ],
+      "pronunciatio": "\ud83e\udd70",
+      "description": "Francisco Lopez is  @ villa",
+      "chat": ""
+    },
+    "Hailey Johnson": {
+      "movement": [
+        27,
+        31
+      ],
+      "pronunciatio": "\ud83c\udf3a",
+      "description": "Hailey Johnson is  @ villa",
+      "chat": ""
     },
     "Arthur Burton": {
       "movement": [
-        54,
-        74
+        55,
+        14
       ],
-      "pronunciatio": "\u2728",
-      "description": "relaxing in the lounge",
-      "chat": null
+      "pronunciatio": "\ud83d\udd25",
+      "description": "Arthur Burton is Arthur Burton opens The Rose and Crown Pub at 5pm everyday, and stands at the counter until 10pm, at which point he closes the bar. @ villa",
+      "chat": ""
     },
     "Ryan Park": {
       "movement": [
-        118,
-        61
+        67,
+        18
       ],
       "pronunciatio": "\ud83c\udfae",
-      "description": "participating in group activities",
-      "chat": null
+      "description": "Ryan Park is  @ villa",
+      "chat": ""
     },
     "Isabella Rodriguez": {
       "movement": [
-        26,
-        18
+        74,
+        14
       ],
-      "pronunciatio": "\ud83c\udf19",
-      "description": "relaxing in the lounge",
-      "chat": null
+      "pronunciatio": "\ud83c\udf38",
+      "description": "Isabella Rodriguez is Isabella Rodriguez opens Hobbs Cafe at 8am everyday, and stands at the counter until 8pm, at which point she closes the cafe. @ villa",
+      "chat": ""
     }
   },
   "meta": {
-    "curr_time": "August 24, 2025, 21:57:43"
+    "curr_time": "February 13, 2023, 00:00:00"
   }
 }

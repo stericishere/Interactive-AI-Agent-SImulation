@@ -92,6 +92,34 @@ except ImportError as e:
     logger.warning(f"Dating show agents not available: {e}")
     DATING_SHOW_AGENTS_AVAILABLE = False
 
+# Import automated simulation setup service
+try:
+    from dating_show.services.integration_example import ensure_clean_8_agent_simulation as _ensure_clean_8_agent_simulation
+    SIMULATION_SETUP_AVAILABLE = True
+    logger.info("Automated simulation setup service imported successfully")
+except ImportError as e:
+    logger.warning(f"Simulation setup service not available: {e}")
+    SIMULATION_SETUP_AVAILABLE = False
+
+def ensure_clean_8_agent_simulation():
+    """
+    Wrapper for the automated simulation setup that returns a result dictionary
+    
+    Returns:
+        dict: Result with success status and message
+    """
+    try:
+        success = _ensure_clean_8_agent_simulation()
+        return {
+            "success": success,
+            "message": "Clean 8-agent simulation ready" if success else "Failed to create clean 8-agent simulation"
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "message": f"Simulation setup failed: {str(e)}"
+        }
+
 # Import reverie components for 25-agent simulation
 # Try local reverie_core first, then fallback to external reverie
 try:
@@ -189,64 +217,69 @@ class ReverieIntegrationManager:
         
     def initialize_reverie_simulation(self, fork_sim_code: str = "base_the_ville_n25", 
                                      sim_code: str = "dating_show_8_agents"):
-        """Initialize the 8-agent dating show simulation"""
+        """Initialize the 8-agent dating show simulation using automated setup service"""
         if not REVERIE_AVAILABLE:
             logger.error("Reverie not available, cannot initialize 8-agent simulation")
             return None
             
         try:
+            # Use automated service to ensure clean 8-agent simulation
+            if SIMULATION_SETUP_AVAILABLE:
+                logger.info("🔧 Using automated simulation setup service...")
+                
+                result = ensure_clean_8_agent_simulation()
+                if not result["success"]:
+                    logger.error(f"Failed to create clean 8-agent simulation: {result['message']}")
+                    logger.info("Falling back to manual verification...")
+                    
+                    # Simple fallback - just check if simulation exists
+                    sim_folder = Path(fs_storage) / sim_code
+                    if not sim_folder.exists():
+                        logger.error(f"No simulation found at {sim_folder} and automated setup failed")
+                        logger.info("Please run the setup service manually or check the simulation files")
+                        return None
+                    else:
+                        logger.warning("Using existing simulation without validation")
+                else:
+                    logger.info(f"✅ {result['message']}")
+            else:
+                logger.warning("Automated setup service not available, using basic validation")
+                sim_folder = Path(fs_storage) / sim_code
+                if not sim_folder.exists():
+                    logger.error(f"8-agent simulation not found at: {sim_folder}")
+                    logger.info("Please create the 8-agent simulation manually or ensure the setup service is available")
+                    return None
+                    
             # Create the required JSON files for frontend communication
             self.create_temp_storage_files(sim_code, step=0)
             
-            # Create reverie server instance
-            logger.info(f"🏗️  Creating ReverieServer...")
-            logger.info(f"Creating ReverieServer: forking from '{fork_sim_code}' -> '{sim_code}'")
+            # Now create ReverieServer with the clean simulation
+            # Since the automated setup created the target simulation, we need to temporarily
+            # rename it to allow ReverieServer to fork properly
+            logger.info(f"🏗️ Creating ReverieServer with clean 8-agent simulation...")
             
-            # Debug: Check if target simulation already exists
             sim_folder = Path(fs_storage) / sim_code
-            print(f"🔍 [DEBUG] Checking if target simulation exists: {sim_folder}")
-            print(f"🔍 [DEBUG] Exists: {sim_folder.exists()}")
+            temp_folder = Path(fs_storage) / f"{sim_code}_clean"
+            
+            # Temporarily rename the clean simulation so ReverieServer can fork to it
             if sim_folder.exists():
-                meta_path = sim_folder / "reverie" / "meta.json"
-                print(f"🔍 [DEBUG] Meta file exists: {meta_path.exists()}")
-                if meta_path.exists():
-                    import json
-                    with open(meta_path) as f:
-                        meta_data = json.load(f)
-                    print(f"🔍 [DEBUG] Persona count in meta.json: {len(meta_data.get('persona_names', []))}")
-                    print(f"🔍 [DEBUG] Persona names: {meta_data.get('persona_names', [])}")
-            
-            # Use existing 8-agent simulation
-            logger.info(f"🎯 [DEBUG] Using existing 8-agent simulation: {sim_code}")
-            
-            # Just load the existing simulation directly without forking
-            sim_folder = Path(fs_storage) / sim_code
-            if not sim_folder.exists():
-                logger.error(f"8-agent simulation not found at: {sim_folder}")
-                return None
+                if temp_folder.exists():
+                    import shutil
+                    shutil.rmtree(temp_folder)
+                sim_folder.rename(temp_folder)
                 
-            # Create ReverieServer by forking to same name (which will just load existing)
-            # We need to temporarily rename to allow "forking" 
-            temp_name = f"{sim_code}_temp"
-            temp_folder = Path(fs_storage) / temp_name
+                # Now fork from the clean simulation back to the original name
+                self.reverie_server = ReverieServer(f"{sim_code}_clean", sim_code)
+                
+                # Clean up the temporary folder
+                if temp_folder.exists():
+                    import shutil
+                    shutil.rmtree(temp_folder)
+            else:
+                # If for some reason the simulation doesn't exist, try normal fork
+                self.reverie_server = ReverieServer(fork_sim_code, sim_code)
             
-            # Clean up any temp folder from previous runs
-            if temp_folder.exists():
-                import shutil
-                shutil.rmtree(temp_folder)
-            
-            # Temporarily rename the target so ReverieServer can "fork" to it
-            sim_folder.rename(temp_folder)
-            
-            # Now fork from temp back to original name
-            self.reverie_server = ReverieServer(temp_name, sim_code)
-            
-            # Clean up temp folder
-            if temp_folder.exists():
-                import shutil
-                shutil.rmtree(temp_folder)
-            
-            logger.info("ReverieServer initialized successfully!")
+            logger.info("✅ ReverieServer initialized successfully!")
             logger.info(f"Simulation contains {len(self.reverie_server.personas)} agents:")
             for i, persona_name in enumerate(self.reverie_server.personas.keys(), 1):
                 logger.info(f"  {i:2d}. {persona_name}")
@@ -255,6 +288,11 @@ class ReverieIntegrationManager:
             
         except Exception as e:
             logger.error(f"Failed to initialize Reverie simulation: {e}")
+            logger.info("Troubleshooting suggestions:")
+            logger.info("1. Ensure the base simulation 'base_the_ville_n25' exists")
+            logger.info("2. Check that the automated setup service is working")
+            logger.info("3. Verify file permissions in the storage directory")
+            logger.info("4. Try running the simulation setup service manually")
             return None
             
     def get_agent_list(self):
@@ -454,27 +492,6 @@ class ReverieIntegrationManager:
                 'production_focus': ['drama', 'romance', 'logistics'][hash(persona_name) % 3]
             }
     
-    def _create_8_agent_meta(self, sim_folder):
-        """Modify the simulation to only include 8 agents"""
-        try:
-            meta_path = sim_folder / "reverie" / "meta.json"
-            with open(meta_path, 'r') as f:
-                meta_data = json.load(f)
-            
-            # Select first 8 agents from the full list
-            all_agents = meta_data.get('persona_names', [])
-            selected_agents = all_agents[:8]  # Take first 8
-            
-            meta_data['persona_names'] = selected_agents
-            
-            with open(meta_path, 'w') as f:
-                json.dump(meta_data, f, indent=2)
-            
-            logger.info(f"Updated meta.json to include 8 agents: {selected_agents}")
-            
-        except Exception as e:
-            logger.error(f"Failed to create 8-agent meta: {e}")
-            # Continue anyway, it might still work
 
 
 class DatingShowMain:

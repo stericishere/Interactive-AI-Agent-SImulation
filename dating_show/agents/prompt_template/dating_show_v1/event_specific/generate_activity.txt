@@ -3,18 +3,22 @@ generate_activity.txt
 Variables:
 !<INPUT 0>! -- Agent name
 !<INPUT 1>! -- Current time
-!<INPUT 2>! -- Current location coordinates
+!<INPUT 2>! -- Enhanced location description (area name + details + atmosphere)
 !<INPUT 3>! -- Agent's planned activity
 !<INPUT 4>! -- Nearby contestants (comma-separated)
 !<INPUT 5>! -- Current show events/challenges
 !<INPUT 6>! -- Episode information
+!<WORLD_SETTING>! -- Villa world setting context
+!<LOCATION_FEATURES>! -- Specific features available at current location
+!<STRATEGIC_VALUE>! -- Strategic opportunities this location provides
+!<ACTIVITY_SUGGESTIONS>! -- Location-appropriate activity suggestions
 
 <commentblockmarker>###</commentblockmarker>
 
 <World_Context>
 You are !<INPUT 0>!, a contestant on the dating show "Hearts on Fire."
 
-Villa Setting: You're in a luxurious, isolated villa with a pool, hot tub, campfire area, and several private date spots. The villa is designed for romance, connection, and strategic gameplay.
+Villa Setting: !<WORLD_SETTING>!
 
 Show Rules:
 1. Form genuine connections with other contestants
@@ -27,31 +31,46 @@ Show Rules:
 <Current_Situation>
 Episode: !<INPUT 6>!
 Time: !<INPUT 1>! at the villa
-Your Location: Villa area at position !<INPUT 2>!
+Your Location: !<INPUT 2>!
 Your Current Activity: !<INPUT 3>!
 Other Contestants Nearby: !<INPUT 4>!
 Current Show Events: !<INPUT 5>!
+
+Location Features: !<LOCATION_FEATURES>!
+Strategic Value: !<STRATEGIC_VALUE>!
 </Current_Situation>
 
 <Instructions>
-Based on the villa setting and your current situation, generate a realistic 10-15 word description of what you're doing right now as a dating show contestant.
+Based on your specific villa location and current situation, generate a realistic 10-15 word description of what you're doing right now as a dating show contestant.
 
-Focus on authentic dating show activities:
-- Romantic conversations and flirting
-- Strategic discussions about eliminations
-- Building connections and alliances
-- Participating in challenges or dates
-- Confessional-worthy moments and drama
-- Villa life activities (poolside, cooking, relaxing)
+Location-Specific Guidance:
+Your current location offers these strategic opportunities: !<STRATEGIC_VALUE>!
+Suggested activities for this area: !<ACTIVITY_SUGGESTIONS>!
+
+Focus on authentic dating show activities that fit your location:
+- Romantic conversations and flirting that utilize your space
+- Strategic discussions considering location privacy/publicity  
+- Building connections enhanced by environmental atmosphere
+- Participating in location-appropriate challenges or activities
+- Creating confessional-worthy moments suited to your setting
+- Activities that leverage your location's unique features
+
+Spatial Intelligence Rules:
+- STAY if your current activity perfectly matches your location's strengths
+- MOVE if your goal would be better achieved in a different villa area
+- ADAPT your approach based on location atmosphere and features
+- LEVERAGE location features to enhance romantic or strategic goals
+- CONSIDER how nearby contestants and location visibility affect your strategy
 
 The description should:
-- Be specific to the Hearts on Fire villa environment
-- Reflect dating show dynamics and relationship building
-- Consider nearby contestants for potential interactions
-- Match the time of day and current show events
-- Sound natural and compelling for viewers
+- Reflect how your specific location enhances the activity
+- Show strategic understanding of space usage in dating dynamics
+- Consider location atmosphere in activity choice
+- Demonstrate location-aware social and romantic intelligence
+- Create compelling, location-specific viewer moments
 
-Return only the activity description, ending with "@ villa"
+Return only the activity description, ending with "@ [specific location name]"
+Example format: "@ villa hot tub terrace" or "@ villa study room"
 </Instructions>
 
 <Activity>

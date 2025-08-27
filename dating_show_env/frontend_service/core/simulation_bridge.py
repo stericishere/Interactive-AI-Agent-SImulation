@@ -23,16 +23,12 @@ class SimulationBridge:
     
     def __init__(self):
         self.settings = Settings()
-        self.simulation_data_path = Path(self.settings.simulation_data_path)
+        # Force use current directory for now
+        self.simulation_data_path = Path(".")
         
-        # Use writable paths inside the container
-        if not self.simulation_data_path.exists():
-            # Running in Docker without volume mount, use container writable paths
-            self.temp_storage_path = Path("/tmp/temp_storage")
-            self.storage_path = Path("/tmp/storage")
-        else:
-            self.temp_storage_path = self.simulation_data_path / "temp_storage"
-            self.storage_path = self.simulation_data_path / "storage"
+        # Always use local paths when running from frontend_service directory
+        self.temp_storage_path = self.simulation_data_path / "temp_storage"
+        self.storage_path = self.simulation_data_path / "storage"
             
         self._cached_state: Optional[SimulationState] = None
         self._last_update: Optional[datetime] = None

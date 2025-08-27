@@ -1,0 +1,80 @@
+{
+  "persona": {
+    "Latoya Williams": {
+      "movement": [
+        17,
+        19
+      ],
+      "pronunciatio": "\u26a1",
+      "description": "Latoya Williams is  @ villa",
+      "chat": ""
+    },
+    "Rajiv Patel": {
+      "movement": [
+        24,
+        17
+      ],
+      "pronunciatio": "\ud83d\ude0a",
+      "description": "Rajiv Patel is  @ villa",
+      "chat": ""
+    },
+    "Abigail Chen": {
+      "movement": [
+        34,
+        17
+      ],
+      "pronunciatio": "\u2728",
+      "description": "Abigail Chen is  @ villa",
+      "chat": ""
+    },
+    "Francisco Lopez": {
+      "movement": [
+        17,
+        34
+      ],
+      "pronunciatio": "\ud83d\udcda",
+      "description": "Francisco Lopez is  @ villa",
+      "chat": ""
+    },
+    "Hailey Johnson": {
+      "movement": [
+        28,
+        32
+      ],
+      "pronunciatio": "\ud83d\udc95",
+      "description": "Hailey Johnson is  @ villa",
+      "chat": ""
+    },
+    "Arthur Burton": {
+      "movement": [
+        51,
+        15
+      ],
+      "pronunciatio": "\ud83c\udf38",
+      "description": "Arthur Burton is Arthur Burton opens The Rose and Crown Pub at 5pm everyday, and stands at the counter until 10pm, at which point he closes the bar. @ villa",
+      "chat": ""
+    },
+    "Ryan Park": {
+      "movement": [
+        66,
+        20
+      ],
+      "pronunciatio": "\ud83e\udd70",
+      "description": "Ryan Park is  @ villa",
+      "chat": ""
+    },
+    "Isabella Rodriguez": {
+      "movement": [
+        73,
+        16
+      ],
+      "pronunciatio": "\ud83c\udfac",
+      "description": "Isabella Rodriguez is Isabella Rodriguez opens Hobbs Cafe at 8am everyday, and stands at the counter until 8pm, at which point she closes the cafe. @ villa",
+      "chat": ""
+    }
+  },
+  "meta": {
+    "curr_time": "February 13, 2023, 00:00:00",
+    "step": 5
+  }
+}

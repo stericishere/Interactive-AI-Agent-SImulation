@@ -6,37 +6,46 @@
   },
   "Rajiv Patel": {
     "maze": "the_ville",
-    "x": 54,
-    "y": 74
+    "x": 26,
+    "y": 18
   },
   "Abigail Chen": {
-    "maze": "the_ville",
-    "x": 16,
-    "y": 32
-  },
-  "Francisco Lopez": {
-    "maze": "the_ville",
-    "x": 118,
-    "y": 61
-  },
-  "Hailey Johnson": {
     "maze": "the_ville",
     "x": 36,
     "y": 18
   },
+  "Francisco Lopez": {
+    "maze": "the_ville",
+    "x": 16,
+    "y": 32
+  },
+  "Hailey Johnson": {
+    "maze": "the_ville",
+    "x": 26,
+    "y": 32
+  },
   "Arthur Burton": {
     "maze": "the_ville",
-    "x": 90,
-    "y": 74
+    "x": 53,
+    "y": 14
   },
   "Ryan Park": {
     "maze": "the_ville",
-    "x": 86,
-    "y": 18
+    "x": 65,
+    "y": 19
   },
   "Isabella Rodriguez": {
     "maze": "the_ville",
-    "x": 94,
-    "y": 18
+    "x": 72,
+    "y": 14
   }
 }
+
+
+
+
+
+
+
+
+

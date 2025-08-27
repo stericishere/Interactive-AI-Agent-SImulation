@@ -4,12 +4,13 @@ Variables:
 !<INPUT 0>! -- Current time
 !<INPUT 1>! -- Episode information  
 !<INPUT 2>! -- Current show events/challenges
-!<INPUT 3>! -- Contestants data (formatted list)
+!<INPUT 3>! -- Contestants data (formatted list with enhanced location context)
+!<WORLD_SETTING>! -- Villa world setting context
 
 <commentblockmarker>###</commentblockmarker>
 
 <World_Context>
-Dating show "Hearts on Fire" - Luxury villa with pool, hot tub, campfire area, and private date spots.
+Dating show "Hearts on Fire" - !<WORLD_SETTING>!
 
 Show Rules:
 1. Form genuine connections with other contestants
@@ -29,23 +30,38 @@ Contestants and their current situations:
 </Current_Simulation>
 
 <Instructions>
-Generate realistic 10-15 word activity descriptions for each contestant based on their current situation in the Hearts on Fire villa.
+Generate realistic 10-15 word activity descriptions for each contestant based on their specific villa location and current situation.
 
-Consider the villa atmosphere and dating show dynamics:
-- Romantic conversations and flirting between contestants
-- Strategic discussions about rose ceremonies and eliminations  
-- Building connections, alliances, and romantic relationships
-- Participating in challenges, dates, and villa activities
-- Confessional-worthy moments, drama, and emotional conversations
-- Time-appropriate activities (poolside relaxation, dinner prep, evening conversations)
+Location-Aware Strategy:
+Each contestant is in a specific villa area with unique strategic opportunities. Consider:
+- How each location's atmosphere and features influence activity choices
+- Strategic advantages/disadvantages of each location for dating show dynamics
+- Location-appropriate activities that leverage environmental strengths
+- Spatial reasoning for romantic connections, privacy needs, and alliance building
+
+Consider dating show dynamics enhanced by spatial intelligence:
+- Romantic conversations utilizing location ambiance and privacy levels
+- Strategic discussions considering location visibility and acoustics
+- Connection-building activities that leverage unique location features
+- Challenge participation and villa activities suited to specific spaces
+- Confessional-worthy moments enhanced by environmental context
+- Time and location-appropriate activities (intimate spaces for deep talks, social areas for group dynamics)
+
+Spatial Intelligence Guidelines:
+- Activities should reflect strategic understanding of space usage
+- Leverage location features for enhanced romantic or strategic impact  
+- Consider location atmosphere in activity choice and approach
+- Show awareness of how location affects dynamics with nearby contestants
+- Demonstrate location-aware social and romantic intelligence
 
 Each description should:
-- Be specific to the Hearts on Fire show and villa setting
-- Reflect authentic dating show contestant behavior
-- Consider nearby contestants for potential interactions
-- Match the current time and ongoing show events
-- Sound natural and engaging for viewers
-- End with "@ villa"
+- Reflect how the specific location enhances the activity
+- Show strategic understanding of villa space usage in dating dynamics
+- Consider location atmosphere, privacy, and features
+- Match the current time, ongoing show events, and spatial context
+- Sound natural, engaging, and location-specific for viewers
+- End with "@ [specific villa location name]"
+- Examples: "@ villa hot tub terrace", "@ villa study room", "@ villa pool deck"
 
 Format: Return exactly one numbered description per contestant, in the order provided.
 </Instructions>
